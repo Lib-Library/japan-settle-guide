@@ -1,0 +1,75 @@
+---
+// 체크리스트 항목 카드: 무엇을 / 어디서 / 언제까지 / 준비물 / 흔한 실수
+import { render, type CollectionEntry } from 'astro:content';
+import Ja from './Ja.astro';
+import Sources from './Sources.astro';
+import ExpertNote from './ExpertNote.astro';
+import VerifyText from './VerifyText.astro';
+import { phaseOf } from '../lib/taxonomy';
+
+interface Props {
+	task: CollectionEntry<'tasks'>;
+	showPhase?: boolean;
+}
+const { task, showPhase = false } = Astro.props;
+const { data } = task;
+const { Content } = await render(task);
+const inputId = `task-${task.id}`;
+const phase = phaseOf(data.phase);
+---
+
+<div class="task-card" data-task-card={task.id}>
+	<label class="task-check-wrap" for={inputId}>
+		<input
+			class="task-check"
+			type="checkbox"
+			id={inputId}
+			data-task-id={task.id}
+			aria-label={`${data.title} 완료 표시`}
+		/>
+	</label>
+	<details class="task-details">
+		<summary>
+			<span class="task-title">
+				{data.title}
+				{data.optional && <span class="task-tag">선택</span>}
+			</span>
+			{data.term && <Ja t={data.term.ja} r={data.term.reading} />}
+			<span class="task-deadline">
+				{showPhase && phase && <span class="task-phase">{phase.num} {phase.label} · </span>}
+				<VerifyText text={data.deadline} />
+			</span>
+		</summary>
+
+		<dl class="task-facts">
+			<dt>어디서</dt>
+			<dd><VerifyText text={data.where} /></dd>
+			<dt>언제까지</dt>
+			<dd><VerifyText text={data.deadline} /></dd>
+			{
+				data.bring.length > 0 && (
+					<>
+						<dt>준비물</dt>
+						<dd>
+							<ul>
+								{data.bring.map((b) => (
+									<li>
+										<VerifyText text={b} />
+									</li>
+								))}
+							</ul>
+						</dd>
+					</>
+				)
+			}
+		</dl>
+
+		{data.needsExpert && <ExpertNote />}
+
+		<div class="task-body sl-markdown-content">
+			<Content />
+		</div>
+
+		<Sources sources={data.sources} lastVerified={data.lastVerified} />
+	</details>
+</div>

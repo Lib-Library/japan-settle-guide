@@ -1,0 +1,348 @@
+/* 색상·글꼴 토큰. Starlight 기본값은 다크 테마가 :root, 라이트 테마가 [data-theme='light']. */
+
+:root {
+	--sl-font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo',
+		'Noto Sans KR', sans-serif;
+	--font-ja: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+
+	/* 포인트 색: 남색 계열 (다크) */
+	--sl-color-accent-low: #18234a;
+	--sl-color-accent: #6b86e8;
+	--sl-color-accent-high: #c9d4fb;
+
+	/* 상태 색 (다크) */
+	--c-verify-bg: #4a3d0a;
+	--c-verify-fg: #ffe28a;
+	--c-warn-bg: #4a2a0c;
+	--c-warn-fg: #ffc48a;
+	--c-done: #4cc38a;
+	--c-ja: #b7c4f5;
+	--c-card-bg: var(--sl-color-gray-6);
+	--c-card-border: var(--sl-color-gray-5);
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #dfe5fb;
+	--sl-color-accent: #2c47b8;
+	--sl-color-accent-high: #16245e;
+
+	--c-verify-bg: #fff2bf;
+	--c-verify-fg: #5c4400;
+	--c-warn-bg: #ffe6cc;
+	--c-warn-fg: #6b3500;
+	--c-done: #17804f;
+	--c-ja: #2c47b8;
+	--c-card-bg: var(--sl-color-bg);
+	--c-card-border: var(--sl-color-gray-5);
+}
+
+/* 일본어 원어 + 독음 */
+[lang='ja'],
+.ja-word {
+	font-family: var(--font-ja);
+}
+.ja-term {
+	white-space: nowrap;
+}
+.ja-word {
+	color: var(--c-ja);
+	font-weight: 500;
+}
+.ja-reading {
+	color: var(--sl-color-gray-2);
+	font-size: 0.92em;
+}
+
+/* [확인 필요] 배지 */
+.verify-badge {
+	display: inline-block;
+	margin-inline: 0.2em;
+	padding: 0 0.45em;
+	border-radius: 0.3em;
+	background: var(--c-verify-bg);
+	color: var(--c-verify-fg);
+	font-size: 0.82em;
+	font-weight: 600;
+	line-height: 1.6;
+	white-space: nowrap;
+	vertical-align: 0.05em;
+}
+
+/* 마지막 확인일 */
+.page-verified {
+	margin-top: 0.5rem;
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+}
+.page-verified.is-stale {
+	display: inline-block;
+	padding: 0.25rem 0.6rem;
+	border-radius: 0.4rem;
+	background: var(--c-warn-bg);
+	color: var(--c-warn-fg);
+}
+
+/* 전문가 확인 안내 */
+.expert-note {
+	margin-block: 1rem;
+	padding: 0.85rem 1rem;
+	border-inline-start: 4px solid var(--c-warn-fg);
+	border-radius: 0.4rem;
+	background: var(--c-warn-bg);
+	color: var(--c-warn-fg);
+	font-size: var(--sl-text-sm);
+}
+.expert-note p {
+	margin: 0.3rem 0 0;
+}
+
+/* 출처 */
+.sources {
+	margin-top: 2rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--sl-color-hairline);
+	font-size: var(--sl-text-sm);
+}
+.task-card .sources {
+	margin-top: 1rem;
+}
+.sources-heading {
+	margin: 0 0 0.3rem;
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+.sources ul {
+	margin: 0;
+	padding-inline-start: 1.2rem;
+}
+.sources li {
+	margin-block: 0.2rem;
+	overflow-wrap: anywhere;
+}
+.sources-date {
+	margin: 0.5rem 0 0;
+	color: var(--sl-color-gray-3);
+}
+
+/* 진행률 */
+.progress {
+	margin-block: 0.5rem;
+}
+.progress-text {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-2);
+}
+.progress-track {
+	height: 0.5rem;
+	margin-top: 0.3rem;
+	border-radius: 999px;
+	background: var(--sl-color-gray-5);
+	overflow: hidden;
+}
+.progress-fill {
+	height: 100%;
+	border-radius: inherit;
+	background: var(--sl-color-accent);
+	transition: width 0.2s ease;
+}
+.progress.is-complete .progress-fill {
+	background: var(--c-done);
+}
+
+/* 체크리스트 */
+.task-list {
+	margin-top: 1.5rem;
+}
+.task-hint,
+.task-empty {
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+}
+.task-card {
+	display: grid;
+	grid-template-columns: 2.75rem 1fr;
+	align-items: start;
+	margin-block: 0.75rem;
+	border: 1px solid var(--c-card-border);
+	border-radius: 0.6rem;
+	background: var(--c-card-bg);
+}
+.task-check-wrap {
+	/* 터치 영역 44px 이상 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	margin-top: 0.3rem;
+	cursor: pointer;
+}
+.task-check {
+	width: 1.35rem;
+	height: 1.35rem;
+	margin: 0;
+	accent-color: var(--c-done);
+	cursor: pointer;
+}
+.task-details {
+	min-width: 0;
+}
+.task-details summary {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	min-height: 2.75rem;
+	padding: 0.8rem 1rem 0.8rem 0.25rem;
+	cursor: pointer;
+	list-style: none;
+}
+.task-details summary::-webkit-details-marker {
+	display: none;
+}
+.task-details summary::after {
+	content: '펼치기 ▾';
+	align-self: flex-end;
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-3);
+}
+.task-details[open] summary::after {
+	content: '접기 ▴';
+}
+.task-title {
+	font-weight: 600;
+	font-size: var(--sl-text-lg);
+	color: var(--sl-color-white);
+	line-height: 1.4;
+}
+.task-tag {
+	margin-inline-start: 0.4rem;
+	padding: 0 0.4em;
+	border: 1px solid var(--sl-color-gray-4);
+	border-radius: 0.3em;
+	font-size: var(--sl-text-xs);
+	font-weight: 500;
+	color: var(--sl-color-gray-2);
+	vertical-align: 0.15em;
+}
+.task-deadline {
+	font-size: var(--sl-text-sm);
+	color: var(--c-warn-fg);
+}
+.task-phase {
+	color: var(--sl-color-gray-3);
+}
+.task-card.is-done .task-title {
+	color: var(--sl-color-gray-3);
+	text-decoration: line-through;
+}
+.task-card.is-done {
+	border-color: var(--c-done);
+}
+.task-facts {
+	display: grid;
+	grid-template-columns: 5rem 1fr;
+	gap: 0.5rem 0.75rem;
+	margin: 0;
+	padding: 0 1rem 0 0.25rem;
+	font-size: var(--sl-text-sm);
+}
+.task-facts dt {
+	font-weight: 600;
+	color: var(--sl-color-gray-2);
+}
+.task-facts dd {
+	margin: 0;
+}
+.task-facts ul {
+	margin: 0;
+	padding-inline-start: 1.1rem;
+}
+.task-body,
+.task-card .sources,
+.task-card .expert-note {
+	margin-inline: 0.25rem 1rem;
+}
+.task-body {
+	font-size: var(--sl-text-sm);
+}
+.task-card .sources {
+	padding-bottom: 1rem;
+}
+
+/* 홈: 시기 선택 */
+.phase-question {
+	font-size: var(--sl-text-h3);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+.phase-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+	gap: 0.75rem;
+	margin: 1rem 0;
+	padding: 0;
+	list-style: none;
+}
+.phase-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	height: 100%;
+	padding: 1rem;
+	border: 1px solid var(--c-card-border);
+	border-radius: 0.6rem;
+	background: var(--c-card-bg);
+	color: var(--sl-color-white);
+	text-decoration: none;
+}
+.phase-card:hover,
+.phase-card:focus-visible {
+	border-color: var(--sl-color-accent);
+}
+.phase-num {
+	font-size: 1.5rem;
+	color: var(--sl-color-accent);
+	line-height: 1;
+}
+.phase-label {
+	font-size: var(--sl-text-lg);
+	font-weight: 600;
+}
+.phase-soon {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+.phase-total {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: end;
+	gap: 0.75rem 1rem;
+}
+.phase-total .progress {
+	flex: 1 1 14rem;
+}
+.reset-btn {
+	min-height: 2.75rem;
+	padding: 0 1rem;
+	border: 1px solid var(--sl-color-gray-4);
+	border-radius: 0.5rem;
+	background: transparent;
+	color: var(--sl-color-gray-2);
+	font: inherit;
+	font-size: var(--sl-text-sm);
+	cursor: pointer;
+}
+.reset-btn:hover {
+	border-color: var(--sl-color-accent);
+	color: var(--sl-color-white);
+}
+
+/* 카드 안의 소제목은 페이지 제목보다 작게 */
+.task-body :is(h2, h3) {
+	margin-top: 1.25rem;
+	font-size: var(--sl-text-base);
+	font-weight: 700;
+}

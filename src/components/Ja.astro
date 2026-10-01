@@ -1,0 +1,13 @@
+---
+// 일본어 원어 + 한글 독음 병기. 사용법: <Ja t="転入届" r="덴뉴토도케" />
+// 출력: 転入届(덴뉴토도케)
+interface Props {
+	/** 일본어 원어 */
+	t: string;
+	/** 한글 독음 */
+	r: string;
+}
+const { t, r } = Astro.props;
+---
+
+<span class="ja-term"><span lang="ja" class="ja-word">{t}</span><span class="ja-reading">({r})</span></span>

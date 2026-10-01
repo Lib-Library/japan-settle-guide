@@ -1,0 +1,45 @@
+---
+// 홈 화면: 4개 시기 버튼 + 시기별·전체 진행률
+import { getCollection } from 'astro:content';
+import ProgressBar from './ProgressBar.astro';
+import { PHASES } from '../lib/taxonomy';
+
+const tasks = await getCollection('tasks');
+const idsOf = (phase: string) => tasks.filter((t) => t.data.phase === phase).map((t) => t.id);
+---
+
+<div class="phase-picker not-content">
+	<p class="phase-question">지금 어느 시기인가요?</p>
+	<ul class="phase-grid">
+		{
+			PHASES.map((p) => {
+				const ids = idsOf(p.id);
+				return (
+					<li>
+						<a class="phase-card" href={p.href}>
+							<span class="phase-num" aria-hidden="true">
+								{p.num}
+							</span>
+							<span class="phase-label">{p.label}</span>
+							{ids.length > 0 ? (
+								<ProgressBar ids={ids} label="완료" />
+							) : (
+								<span class="phase-soon">준비 중</span>
+							)}
+						</a>
+					</li>
+				);
+			})
+		}
+	</ul>
+	<div class="phase-total">
+		<ProgressBar ids={tasks.map((t) => t.id)} label="전체 진행률" />
+		<button type="button" class="reset-btn" data-progress-reset>진행 상황 초기화</button>
+	</div>
+	<p class="task-hint">체크한 내용은 서버로 전송되지 않고 지금 쓰는 브라우저에만 저장됩니다. 다른 기기와는 공유되지 않습니다.</p>
+</div>
+
+<script>
+	import { initChecklist } from '../scripts/checklist';
+	initChecklist();
+</script>

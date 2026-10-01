@@ -1,0 +1,23 @@
+---
+// 모든 페이지 제목 아래에 "마지막 확인일"을 표시하고,
+// 오래된 페이지에는 경고를, needsExpert 페이지에는 전문가 확인 안내를 붙인다.
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import ExpertNote from '../ExpertNote.astro';
+import { formatDate, isStale } from '../../lib/taxonomy';
+
+const { lastVerified, needsExpert } = Astro.locals.starlightRoute.entry.data;
+// 404 등 Starlight 자체 페이지에는 lastVerified가 없다.
+const stale = lastVerified ? isStale(lastVerified) : false;
+---
+
+<Default />
+{
+	lastVerified && (
+		<p class:list={['page-verified', { 'is-stale': stale }]}>
+			마지막 확인일:
+			<time datetime={lastVerified.toISOString().slice(0, 10)}>{formatDate(lastVerified)}</time>
+			{stale && <span> · 확인한 지 6개월이 넘어 바뀐 내용이 있을 수 있습니다.</span>}
+		</p>
+	)
+}
+{needsExpert && <ExpertNote />}

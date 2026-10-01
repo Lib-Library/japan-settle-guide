@@ -1,0 +1,25 @@
+---
+// 진행률 막대. 실제 값은 checklist.ts가 브라우저에서 채운다 (JS가 없으면 0으로 보임).
+interface Props {
+	ids: string[];
+	label: string;
+}
+const { ids, label } = Astro.props;
+---
+
+<div class="progress" data-progress={ids.join(',')}>
+	<div class="progress-text">
+		<span>{label}</span>
+		<span><span data-progress-done>0</span> / {ids.length}</span>
+	</div>
+	<div
+		class="progress-track"
+		role="progressbar"
+		aria-label={label}
+		aria-valuemin="0"
+		aria-valuemax={ids.length}
+		aria-valuenow="0"
+	>
+		<div class="progress-fill" style="width: 0%"></div>
+	</div>
+</div>

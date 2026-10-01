@@ -1,0 +1,38 @@
+---
+// 시기(phase) 또는 주제(topic)로 할 일을 모아 체크리스트로 보여 준다.
+// 사용법: <TaskList phase="arrival-2w" />  또는  <TaskList topic="registration" />
+import { getCollection } from 'astro:content';
+import TaskCard from './TaskCard.astro';
+import ProgressBar from './ProgressBar.astro';
+import type { PhaseId, TopicId } from '../lib/taxonomy';
+
+interface Props {
+	phase?: PhaseId;
+	topic?: TopicId;
+	progressLabel?: string;
+}
+const { phase, topic, progressLabel = '진행 상황' } = Astro.props;
+
+const tasks = (
+	await getCollection('tasks', ({ data }) => (!phase || data.phase === phase) && (!topic || data.topic === topic))
+).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'ko'));
+---
+
+{
+	tasks.length === 0 ? (
+		<p class="task-empty">이 부분의 체크리스트는 아직 준비 중입니다.</p>
+	) : (
+		<div class="task-list not-content">
+			<ProgressBar ids={tasks.map((t) => t.id)} label={progressLabel} />
+			<p class="task-hint">항목을 누르면 자세한 내용이 열립니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
+			{tasks.map((task) => (
+				<TaskCard task={task} showPhase={!phase} />
+			))}
+		</div>
+	)
+}
+
+<script>
+	import { initChecklist } from '../scripts/checklist';
+	initChecklist();
+</script>

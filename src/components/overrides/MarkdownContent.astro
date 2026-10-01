@@ -1,0 +1,10 @@
+---
+// 본문 끝에 페이지 frontmatter의 출처 목록을 자동으로 붙인다.
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import Sources from '../Sources.astro';
+
+const { sources, lastVerified } = Astro.locals.starlightRoute.entry.data;
+---
+
+<Default><slot /></Default>
+<Sources sources={sources ?? []} lastVerified={lastVerified} heading="이 페이지의 공식 출처" />

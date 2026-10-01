@@ -1,0 +1,32 @@
+---
+import { formatDate } from '../lib/taxonomy';
+
+interface Props {
+	sources: { label: string; url: string }[];
+	lastVerified?: Date;
+	heading?: string;
+}
+const { sources, lastVerified, heading = '공식 출처' } = Astro.props;
+---
+
+{
+	sources.length > 0 && (
+		<section class="sources" aria-label={heading}>
+			<p class="sources-heading">{heading}</p>
+			<ul>
+				{sources.map((s) => (
+					<li>
+						<a href={s.url} target="_blank" rel="noopener">
+							{s.label}
+						</a>
+					</li>
+				))}
+			</ul>
+			{lastVerified && (
+				<p class="sources-date">
+					마지막 확인일: <time datetime={lastVerified.toISOString().slice(0, 10)}>{formatDate(lastVerified)}</time>
+				</p>
+			)}
+		</section>
+	)
+}
