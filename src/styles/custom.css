@@ -41,10 +41,8 @@
 .ja-word {
 	font-family: var(--font-ja);
 }
-.ja-term {
-	white-space: nowrap;
-}
 .ja-word {
+	white-space: nowrap;
 	color: var(--c-ja);
 	font-weight: 500;
 }
@@ -345,4 +343,14 @@
 	margin-top: 1.25rem;
 	font-size: var(--sl-text-base);
 	font-weight: 700;
+}
+
+/* 좁은 화면에서 표 열이 한 글자씩 쪼개지지 않도록: 열 최소 너비 + 표만 가로 스크롤 */
+.sl-markdown-content table {
+	display: block;
+	max-width: 100%;
+	overflow-x: auto;
+}
+.sl-markdown-content :is(th, td) {
+	min-width: 6.5rem;
 }
