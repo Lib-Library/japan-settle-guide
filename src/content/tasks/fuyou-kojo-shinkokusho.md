@@ -14,7 +14,11 @@ sources:
     url: https://www.nta.go.jp/users/gensen/nencho/index/kyuyosyotokusya.htm
   - label: 국세청 – No.2511 税額表の種類と使い方
     url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2511.htm
-lastVerified: 2026-10-01
+  - label: 국세청 – 国外居住親族に係る扶養控除等の適用について
+    url: https://www.nta.go.jp/taxes/tetsuzuki/shinsei/annai/gensen/kokugai/index.htm
+  - label: 국세청 – No.1180 扶養控除
+    url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1180.htm
+lastVerified: 2026-10-05
 needsExpert: true
 ---
 
@@ -25,5 +29,5 @@ needsExpert: true
 ## 흔한 실수
 
 - **"부양가족이 없으니 안 내도 된다"고 생각하기**: 내지 않으면 매달 원천징수 세금이 높게 계산됩니다.
-- **한국에 있는 가족을 적을지 혼자 판단하기**: 국외 거주 가족을 부양가족으로 올리려면 관계·송금 증명 서류 등이 따로 필요하고 요건이 까다롭습니다. 회사 담당자나 세무서에 확인하세요. [확인 필요]
+- **한국에 있는 가족을 적을지 혼자 판단하기**: 국외에 사는 가족을 부양공제 대상으로 올리려면 **친족관계 서류**(가족관계증명서 등)와 **송금 관계 서류**(또는 「38만 엔 송금 서류」)를 일본어 번역문과 함께 회사에 내거나 보여 줘야 합니다. 또 국외 거주 가족은 **나이 요건**이 있어, 16세 이상 30세 미만이거나 70세 이상이 아니면 유학·장애·연 38만 엔 이상 송금 같은 조건을 채워야 합니다. 회사 담당자와 국세청 안내를 함께 확인하세요.
 - **부업·두 번째 직장이 있는데 두 곳에 다 내기**: 이 서류는 주된 급여를 받는 한 곳에만 냅니다.

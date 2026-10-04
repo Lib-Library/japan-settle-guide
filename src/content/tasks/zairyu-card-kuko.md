@@ -14,7 +14,11 @@ sources:
     url: https://www.moj.go.jp/isa/publications/faq/newimmiact_4_port-city.html
   - label: 출입국재류관리청 – 上陸許可時に在留カードを交付する空港の追加について
     url: https://www.moj.go.jp/isa/applications/resources/nyuukokukanri10_00038.html
-lastVerified: 2026-10-01
+  - label: 출입국재류관리청 – 自動化ゲート利用案内
+    url: https://www.moj.go.jp/isa/immigration/procedures/01_00160.html
+  - label: 출입국재류관리청 – 顔認証ゲートの更なる活用について
+    url: https://www.moj.go.jp/isa/immigration/resources/nyuukokukanri07_00168.html
+lastVerified: 2026-10-05
 ---
 
 중장기 체류자로 입국하면 아래 공항에서는 입국 심사 때 여권에 상륙허가(上陸許可, 조리쿠 교카) 도장을 찍고 **그 자리에서 재류카드를 줍니다**.
@@ -28,5 +32,5 @@ lastVerified: 2026-10-01
 ## 흔한 실수
 
 - **카드 내용을 확인하지 않고 공항을 떠나기**: 이름 철자, 생년월일, 재류자격, 재류기간이 맞는지 그 자리에서 확인하세요.
-- **자동화 게이트로 통과하기**: 중장기 체류자로 처음 입국할 때는 재류카드를 받아야 하므로 유인 심사대를 이용하세요. [확인 필요]
+- **자동화 게이트로 가려고 하기**: 자동화 게이트는 미리 이용 등록을 한 사람용이고, 얼굴 인증 게이트를 쓸 수 있는 외국인은 「단기 체류」로 출국하는 사람 등으로 한정됩니다. 처음 입국해 재류카드를 받아야 하는 사람은 **직원이 있는 심사대**로 가세요.
 - **입국 직후 받은 카드 뒷면 주소란이 비어 있다고 걱정하기**: 주소는 전입신고 때 시·구·정·촌 창구에서 적어 줍니다.
