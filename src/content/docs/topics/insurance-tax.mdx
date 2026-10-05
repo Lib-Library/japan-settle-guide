@@ -1,0 +1,67 @@
+---
+title: 사회보험·세금
+description: 급여에서 빠지는 건강보험·후생연금·고용보험·소득세·주민세, 연말정산과 확정신고, 외국인의 과세 구분
+lastVerified: 2026-10-05
+needsExpert: true
+sidebar:
+  order: 6
+sources:
+  - label: 일본연금기구 – 就職したとき（健康保険・厚生年金保険の資格取得）の手続き
+    url: https://www.nenkin.go.jp/service/kounen/tekiyo/hihokensha1/20150422.html
+  - label: 후생노동성 – 雇用保険制度 Q＆A～事業主の皆様へ
+    url: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000140565.html
+  - label: 국세청 – 給与所得者（従業員）の方へ (연말정산)
+    url: https://www.nta.go.jp/users/gensen/nencho/index/kyuyosyotokusya.htm
+  - label: 국세청 – No.1900 給与所得者で確定申告が必要な人
+    url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm
+  - label: 국세청 – No.2010 納税義務者となる個人
+    url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2010.htm
+  - label: 국세청 – No.2875 居住者と非居住者の区分
+    url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2875.htm
+  - label: 총무성 – 外国人の方の個人住民税について
+    url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/individual-inhabitant-tax.html
+---
+
+import TaskList from '../../../components/TaskList.astro';
+import Ja from '../../../components/Ja.astro';
+
+일본 회사원은 세금과 사회보험 대부분을 **회사가 급여에서 떼어 대신 처리**합니다. 본인이 할 일은 필요한 서류를 제때 회사에 내고, 급여명세서로 제대로 처리되는지 확인하는 것입니다.
+
+## 급여에서 빠지는 것
+
+- **<Ja t="健康保険" r="겐코호켄" /> (건강보험)** — 회사가 가입 신고(입사 후 5일 이내). 병원에서는 마이나 호켄쇼나 자격확인서를 보여 줌
+- **<Ja t="厚生年金" r="고세이넨킨" /> (후생연금)** — 건강보험과 함께 가입. 국적과 관계없이 대상
+- **<Ja t="雇用保険" r="고요호켄" /> (고용보험)** — 주 20시간 이상, 31일 이상 고용 예정이면 국적과 관계없이 대상
+- **<Ja t="所得税" r="쇼토쿠제이" /> (소득세)** — 매달 원천징수, 연말정산으로 정산
+- **<Ja t="住民税" r="주민제이" /> (주민세)** — 일본에 온 **다음 해 6월부터** 공제 시작
+
+## 1년의 흐름
+
+| 시기 | 할 일 |
+| --- | --- |
+| 입사 때 | 부양공제 등 신고서 제출, 마이넘버 알리기 |
+| 매달 | 급여명세서에서 보험료·세금 확인 |
+| 연말 | 연말정산 서류 제출 → 원천징수표 받기 |
+| 다음 해 2~3월 | (해당자) 확정신고·환급 신고 |
+| 다음 해 6월 | 주민세 급여 공제 시작 |
+
+## 외국인의 과세 구분: 「비영주자」
+
+일본에 주소가 있거나 1년 이상 거소가 있는 사람은 **거주자**로 일본에서 소득세를 냅니다. 그중 **일본 국적이 없고, 과거 10년 동안 일본에 주소·거소가 있던 기간이 합계 5년 이하**인 사람은 **<Ja t="非永住者" r="히에이주샤" /> (비영주자)**입니다.
+
+- **비영주자** — 해외에서 생긴 소득(국외 원천 소득) 외의 소득과, 국외 원천 소득 중 **일본에서 지급되거나 일본으로 송금된 것**에 과세
+- **비영주자가 아닌 거주자** — 어디서 생긴 소득이든 **모든 소득**에 과세
+
+한국에 임대·이자·배당 등 소득이 있거나, 한국에서 일본으로 돈을 보내는 경우에는 과세 범위가 달라질 수 있습니다. 한국 쪽 세금과 이중과세 문제도 있으니 **반드시 세무서나 세무사에게 확인**하세요. 한국 쪽 세금은 「한국과의 연결」 가이드에서 다룰 예정입니다.
+
+## 선택: 세금 혜택 제도
+
+일본에는 후루사토노제(<Ja t="ふるさと納税" r="후루사토노제이" />), 비과세 투자 제도 NISA, 개인형 확정기여연금 iDeCo 같은 제도가 있습니다. 첫해에 꼭 할 필요는 없으며, 조건과 효과는 개인 상황(비영주자 여부 포함)에 따라 다르니 공식 사이트에서 확인하세요.
+
+- [총무성 – ふるさと納税ポータルサイト](https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/mechanism/)
+- [금융청 – NISA特設ウェブサイト](https://www.fsa.go.jp/policy/nisa2/)
+- [iDeCo 공식 사이트 (국민연금기금연합회)](https://www.ideco-koushiki.jp/)
+
+## 이 주제의 체크리스트
+
+<TaskList topic="insurance-tax" progressLabel="사회보험·세금 할 일" />
