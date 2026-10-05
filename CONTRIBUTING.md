@@ -20,7 +20,7 @@
 ---
 title: 할 일 이름 (무엇을)
 term: { ja: 転入届, reading: 덴뉴토도케 }   # 일본어 원어가 없으면 이 줄 삭제
-phase: arrival-2w            # pre-arrival | arrival-2w | first-3m | first-1y
+phase: arrival-2w            # pre-arrival | arrival-2w | first-3m | first-1y | leaving
 topic: registration          # src/lib/taxonomy.ts의 TOPICS 중 하나
 order: 10                    # 같은 시기 안에서 표시 순서 (작을수록 위)
 optional: false              # 꼭 할 필요는 없는 항목이면 true → "선택" 표시

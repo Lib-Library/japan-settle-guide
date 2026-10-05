@@ -5,6 +5,7 @@ export const PHASES = [
 	{ id: 'arrival-2w', num: '②', label: '입국 후 2주 이내', href: '/timeline/arrival-2w/' },
 	{ id: 'first-3m', num: '③', label: '첫 3개월', href: '/timeline/first-3m/' },
 	{ id: 'first-1y', num: '④', label: '첫 1년', href: '/timeline/first-1y/' },
+	{ id: 'leaving', num: '⑤', label: '귀국할 때', href: '/timeline/leaving/' },
 ] as const;
 
 export const TOPICS = [
