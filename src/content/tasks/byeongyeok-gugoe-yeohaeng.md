@@ -7,7 +7,7 @@ optional: true
 where: 병무청 (병무민원포털 온라인, 관할 지방병무청, 상담 1588-9090) / 출국 후에는 주일 한국대사관·총영사관
 deadline: 출국 전 — 허가 없이 출국하면 병역법 위반
 bring:
-  - 일본 회사 채용·재직 증명 등 (허가 종류에 따라 다름) [확인 필요]
+  - 허가 종류마다 서류가 다름 — 병무청(1588-9090)에 본인 신분을 말하고 확인
 sources:
   - label: 병무청 – 국외여행허가 절차 안내
     url: https://www.mma.go.kr/contents.do?mc=usr0000186
@@ -15,7 +15,7 @@ sources:
     url: https://www.mma.go.kr/contents.do?mc=mma0000792
   - label: 병무청 – 국외이주 목적 외 허가 · 단기여행
     url: https://www.mma.go.kr/contents.do?mc=mma0000787
-lastVerified: 2026-10-01
+lastVerified: 2026-10-05
 needsExpert: true
 ---
 

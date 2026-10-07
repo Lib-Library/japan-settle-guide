@@ -7,7 +7,7 @@ where: 한국 읍·면·동 주민센터
 deadline: 출국 전
 bring:
   - 신분증
-  - 일본 비자 사본 또는 해외 체류를 확인할 수 있는 서류 (재직·채용 증명 등) [확인 필요]
+  - 체류 국가의 비자 사본 등 해외 체류를 확인할 수 있는 서류
 sources:
   - label: 행정안전부 – 유학 등으로 해외체류할 때 거주불명자로 등록되는 불편 해소
     url: https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&nttId=59819

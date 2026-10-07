@@ -6,7 +6,7 @@ order: 30
 where: 국민연금공단 (전화 1355, 홈페이지·「내 곁에 국민연금」 앱)
 deadline: 출국 전 (출국 후에도 신청 가능)
 bring:
-  - 출국 사실·일본 취업을 확인할 수 있는 서류 (요구될 때) [확인 필요]
+  - 필요 서류는 신청 방법마다 다름 — 1355에 전화해 확인
 sources:
   - label: 국민연금공단 – 사회보장협정 개요 (협정 체결 현황)
     url: https://www.nps.or.kr/pnsinfo/sclsmise/getOHAF0126M0.do
