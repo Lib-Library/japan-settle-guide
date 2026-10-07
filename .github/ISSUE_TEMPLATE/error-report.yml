@@ -1,0 +1,36 @@
+name: 오류 제보
+description: 틀린 내용, 바뀐 제도, 열리지 않는 링크를 알려 주세요.
+title: "[오류] "
+labels: ["오류 제보"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: 어느 페이지인가요?
+      description: 페이지 주소나 제목
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 어떤 문제인가요?
+      options:
+        - 내용이 틀렸어요 (제도·금액·기한 등)
+        - 내용이 바뀌었어요 (예전에는 맞았음)
+        - 링크가 열리지 않아요
+        - 이해하기 어려워요
+        - 기타
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 자세한 내용
+      description: 무엇이 어떻게 다른지 적어 주세요.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: 근거가 되는 공식 출처 (선택)
+      description: 공식 안내 페이지 주소가 있으면 알려 주세요.

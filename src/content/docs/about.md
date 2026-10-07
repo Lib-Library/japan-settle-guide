@@ -25,4 +25,6 @@ lastVerified: 2026-10-01
 
 ## 틀린 내용을 발견했다면
 
-오류 제보 방법은 사이트 공개 시 안내할 예정입니다. [확인 필요]
+제도가 바뀌었거나 틀린 내용, 열리지 않는 링크를 발견하면 알려 주세요. 근거가 되는 공식 안내 페이지 주소를 함께 적어 주시면 더 빨리 고칠 수 있습니다.
+
+- **GitHub 계정이 있다면**: [GitHub Issue로 제보하기](https://github.com/Lib-Library/japan-settle-guide/issues/new?template=error-report.yml)
