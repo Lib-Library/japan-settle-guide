@@ -27,4 +27,5 @@ lastVerified: 2026-10-01
 
 제도가 바뀌었거나 틀린 내용, 열리지 않는 링크를 발견하면 알려 주세요. 근거가 되는 공식 안내 페이지 주소를 함께 적어 주시면 더 빨리 고칠 수 있습니다.
 
+- **누구나 (계정 불필요)**: [구글 폼으로 제보하기](https://forms.gle/pa8brvejKJhNQ1WH8)
 - **GitHub 계정이 있다면**: [GitHub Issue로 제보하기](https://github.com/Lib-Library/japan-settle-guide/issues/new?template=error-report.yml)
