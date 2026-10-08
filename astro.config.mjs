@@ -60,6 +60,7 @@ export default defineConfig({
 					label: '주제별 가이드',
 					items: [{ autogenerate: { directory: 'topics' } }],
 				},
+				{ label: '용어집', slug: 'glossary' },
 				{ label: '이 사이트에 대해', slug: 'about' },
 			],
 		}),
