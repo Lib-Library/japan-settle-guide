@@ -1,6 +1,6 @@
 ---
 title: 고용보험 가입 확인하기
-term: { ja: 雇用保険, reading: 고요 호켄 }
+term: { ja: 雇用保険, reading: 고요호켄 }
 phase: arrival-2w
 topic: insurance-tax
 order: 32
