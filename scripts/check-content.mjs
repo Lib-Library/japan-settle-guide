@@ -2,8 +2,9 @@
 // 사용법: npm run check
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = new URL('../src/content/', import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL('../src/content/', import.meta.url));
 const MARK = '[확인 필요]';
 const STALE_DAYS = 183; // src/lib/taxonomy.ts의 STALE_AFTER_DAYS와 같게 유지
 
