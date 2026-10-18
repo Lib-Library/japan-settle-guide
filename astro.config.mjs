@@ -6,6 +6,7 @@ import remarkVerify from './src/plugins/remark-verify.mjs';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://japan-settle-guide.librewiki-net.workers.dev',
 	markdown: {
 		// 본문의 [확인 필요]를 배지로 바꾸는 remark 플러그인을 쓰기 위해 unified 처리기를 사용한다.
 		processor: unified({ remarkPlugins: [remarkVerify] }),
