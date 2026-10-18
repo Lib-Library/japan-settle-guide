@@ -1,11 +1,11 @@
 // 시기(phase)와 주제(topic)의 목록. 새 주제를 추가하려면 여기에 한 줄 추가한다.
 
 export const PHASES = [
-	{ id: 'pre-arrival', num: '①', label: '입국 전', href: '/timeline/pre-arrival/' },
-	{ id: 'arrival-2w', num: '②', label: '입국 후 2주 이내', href: '/timeline/arrival-2w/' },
-	{ id: 'first-3m', num: '③', label: '첫 3개월', href: '/timeline/first-3m/' },
-	{ id: 'first-1y', num: '④', label: '첫 1년', href: '/timeline/first-1y/' },
-	{ id: 'leaving', num: '⑤', label: '귀국할 때', href: '/timeline/leaving/' },
+	{ id: 'pre-arrival', label: '입국 전', href: '/timeline/pre-arrival/' },
+	{ id: 'arrival-2w', label: '입국 후 2주 이내', href: '/timeline/arrival-2w/' },
+	{ id: 'first-3m', label: '첫 3개월', href: '/timeline/first-3m/' },
+	{ id: 'first-1y', label: '첫 1년', href: '/timeline/first-1y/' },
+	{ id: 'leaving', label: '귀국할 때', href: '/timeline/leaving/' },
 ] as const;
 
 export const TOPICS = [

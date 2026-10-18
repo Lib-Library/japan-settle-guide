@@ -17,9 +17,6 @@ const idsOf = (phase: string) => tasks.filter((t) => t.data.phase === phase).map
 				return (
 					<li>
 						<a class="phase-card" href={p.href}>
-							<span class="phase-num" aria-hidden="true">
-								{p.num}
-							</span>
 							<span class="phase-label">{p.label}</span>
 							{ids.length > 0 ? (
 								<ProgressBar ids={ids} label="완료" />

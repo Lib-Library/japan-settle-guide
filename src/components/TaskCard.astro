@@ -1,5 +1,5 @@
 ---
-// 체크리스트 항목 카드: 무엇을 / 어디서 / 언제까지 / 준비물 / 흔한 실수
+// 체크리스트 항목 카드: 무엇을 / 어디서 / 언제까지 / 준비물 / 놓치기 쉬운 점
 import { render, type CollectionEntry } from 'astro:content';
 import Ja from './Ja.astro';
 import Sources from './Sources.astro';
@@ -36,7 +36,7 @@ const phase = phaseOf(data.phase);
 			</span>
 			{data.term && <Ja t={data.term.ja} r={data.term.reading} />}
 			<span class="task-deadline">
-				{showPhase && phase && <span class="task-phase">{phase.num} {phase.label} · </span>}
+				{showPhase && phase && <span class="task-phase">{phase.label} · </span>}
 				<VerifyText text={data.deadline} />
 			</span>
 		</summary>

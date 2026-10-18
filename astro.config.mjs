@@ -39,7 +39,7 @@ export default defineConfig({
 					},
 				},
 			],
-			customCss: ['./src/styles/custom.css'],
+			customCss: ['krds-uiux/resources/css/token/krds_tokens.css', './src/styles/custom.css'],
 			components: {
 				PageTitle: './src/components/overrides/PageTitle.astro',
 				MarkdownContent: './src/components/overrides/MarkdownContent.astro',
@@ -49,11 +49,11 @@ export default defineConfig({
 				{
 					label: '시간순 체크리스트',
 					items: [
-						{ label: '① 입국 전', slug: 'timeline/pre-arrival' },
-						{ label: '② 입국 후 2주 이내', slug: 'timeline/arrival-2w' },
-						{ label: '③ 첫 3개월', slug: 'timeline/first-3m' },
-						{ label: '④ 첫 1년', slug: 'timeline/first-1y' },
-						{ label: '⑤ 귀국할 때', slug: 'timeline/leaving' },
+						{ label: '입국 전', slug: 'timeline/pre-arrival' },
+						{ label: '입국 후 2주 이내', slug: 'timeline/arrival-2w' },
+						{ label: '첫 3개월', slug: 'timeline/first-3m' },
+						{ label: '첫 1년', slug: 'timeline/first-1y' },
+						{ label: '귀국할 때', slug: 'timeline/leaving' },
 					],
 				},
 				{
