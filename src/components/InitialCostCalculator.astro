@@ -94,7 +94,7 @@ const SEGMENTS = [
 
 			<fieldset id="cost-s3">
 				<legend>입주일과 선불 집세</legend>
-				<div class="cost-row">
+				<div class="cost-stack">
 					<div class="cost-field">
 						<label for="cost-date">입주(계약 시작)일</label>
 						<input type="date" id="cost-date" />
@@ -706,6 +706,22 @@ const SEGMENTS = [
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 		gap: 1rem;
+	}
+	/* Safari의 날짜 입력칸은 칸 너비를 넘어 옆 칸과 겹칠 수 있어 위아래로 쌓는다 */
+	.cost-stack {
+		display: grid;
+		gap: 1rem;
+	}
+	.cost-calc input[type='date'] {
+		display: block;
+		min-width: 0;
+		max-width: 100%;
+		height: 2.75rem;
+		appearance: none;
+		-webkit-appearance: none;
+	}
+	.cost-calc input[type='date']::-webkit-date-and-time-value {
+		text-align: left;
 	}
 	.cost-field {
 		display: grid;
