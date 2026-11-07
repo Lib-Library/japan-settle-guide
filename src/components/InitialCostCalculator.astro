@@ -147,18 +147,33 @@ const SEGMENTS = [
 			</div>
 			<dl id="cost-items"></dl>
 			<div class="cost-actions">
-				<button type="button" id="cost-copy">결과 복사해서 공유</button>
+				<button type="button" id="cost-share">결과 이미지로 공유</button>
 				<button type="button" id="cost-reset" class="is-ghost">처음 값으로</button>
 			</div>
-			<div class="cost-status" id="cost-status" role="status"></div>
 		</aside>
 	</div>
+
+	<dialog class="cost-dialog" id="cost-dialog" aria-labelledby="cost-dialog-title">
+		<div class="cost-dialog-head">
+			<h2 id="cost-dialog-title">결과 공유</h2>
+			<button type="button" id="cost-close" class="is-ghost">닫기</button>
+		</div>
+		<img id="cost-image" alt="" />
+		<div class="cost-actions">
+			<button type="button" id="cost-img-share" hidden>이미지 공유</button>
+			<button type="button" id="cost-img-copy" hidden>이미지 복사</button>
+			<button type="button" id="cost-img-save" class="is-ghost">이미지 저장</button>
+			<button type="button" id="cost-copy" class="is-ghost">글로 복사</button>
+		</div>
+		<div class="cost-status" id="cost-status" role="status"></div>
+	</dialog>
 
 	<div class="cost-bar"><span>초기비용 합계 <b id="cost-bar-total">0엔</b></span><a href="#cost-sheet">내역 보기</a></div>
 </div>
 
 <script>
 	import { calcCost, defaultMoveIn, EXTRAS, PRESETS } from '../lib/initial-cost';
+	import { drawShareCard } from '../scripts/cost-share-image';
 
 	const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(`cost-${id}`) as T;
 	const form = $<HTMLFormElement>('form');
@@ -226,8 +241,7 @@ const SEGMENTS = [
 				return row;
 			}),
 		);
-		$('status').textContent = '';
-		return { s, r, fx };
+		return { s, r, fx, sub: $('sub').textContent ?? '' };
 	}
 
 	const pressPreset = (key: string | null) =>
@@ -299,8 +313,69 @@ const SEGMENTS = [
 		applyPreset('std');
 	});
 
+	const dialog = $<HTMLDialogElement>('dialog');
+	const image = $<HTMLImageElement>('image');
+	const status = $('status');
+	const pageUrl = () => `${location.origin}${location.pathname}`;
+	const FILE_NAME = 'japan-initial-cost.png';
+	let shared = render();
+	let png: Blob | null = null;
+
+	$('share').addEventListener('click', async () => {
+		shared = render();
+		const { r, sub } = shared;
+		status.textContent = '';
+		document.querySelector('.cost-fallback')?.remove();
+		png = await drawShareCard({
+			total: yen(r.total),
+			sub,
+			keep: yen(r.keep),
+			gone: yen(r.gone),
+			keepRatio: r.total ? r.keep / r.total : 0,
+			items: r.items.filter((it) => it.amount).map((it) => ({ label: it.label, amount: yen(it.amount) })),
+			footer: `일본 정착 기초 가이드 · ${location.host}`,
+		});
+		const file = new File([png], FILE_NAME, { type: 'image/png' });
+		URL.revokeObjectURL(image.src);
+		image.src = URL.createObjectURL(png);
+		image.alt = `초기비용 합계 ${yen(r.total)} 요약 이미지`;
+		$('img-share').hidden = !navigator.canShare?.({ files: [file] });
+		$('img-copy').hidden = !(navigator.clipboard?.write && 'ClipboardItem' in window);
+		dialog.showModal();
+	});
+
+	$('close').addEventListener('click', () => dialog.close());
+	dialog.addEventListener('click', (e) => {
+		if (e.target === dialog) dialog.close();
+	});
+
+	$('img-share').addEventListener('click', () => {
+		const file = new File([png!], FILE_NAME, { type: 'image/png' });
+		navigator.share({ files: [file], text: pageUrl() }).catch((e) => {
+			if (e.name !== 'AbortError') status.textContent = '공유하지 못했습니다. 이미지 저장을 이용하세요.';
+		});
+	});
+
+	$('img-copy').addEventListener('click', () => {
+		navigator.clipboard.write([new ClipboardItem({ 'image/png': png! })]).then(
+			() => {
+				status.textContent = '이미지를 복사했습니다. 카카오톡이나 메모에 붙여 넣으세요.';
+			},
+			() => {
+				status.textContent = '이미지를 복사하지 못했습니다. 이미지 저장을 이용하세요.';
+			},
+		);
+	});
+
+	$('img-save').addEventListener('click', () => {
+		const a = document.createElement('a');
+		a.href = image.src;
+		a.download = FILE_NAME;
+		a.click();
+	});
+
 	$('copy').addEventListener('click', () => {
-		const { s, r, fx } = render();
+		const { s, r, fx } = shared;
 		const text = [
 			'[일본 집 초기비용 예상]',
 			`집세 ${yen(s.rent)} + 관리비 ${yen(s.mgmt)}`,
@@ -311,9 +386,8 @@ const SEGMENTS = [
 			...(fx ? [`원화 ${man((r.total * fx) / 100)}`] : []),
 			`그중 돌려받을 수 있는 돈(시키킨): ${yen(r.keep)}`,
 			'',
-			`계산해 보기: ${location.origin}${location.pathname}`,
+			`계산해 보기: ${pageUrl()}`,
 		].join('\n');
-		const status = $('status');
 		const fallback = () => {
 			document.querySelector('.cost-fallback')?.remove();
 			const ta = document.createElement('textarea');
@@ -640,6 +714,46 @@ const SEGMENTS = [
 		border-color: var(--sl-color-gray-4);
 		background: transparent;
 		color: var(--sl-color-gray-2);
+	}
+	.cost-dialog {
+		margin: auto; /* Starlight 초기화가 <dialog>의 가운데 정렬을 없앤다 */
+		width: min(30rem, calc(100vw - 2rem));
+		max-height: calc(100dvh - 2rem);
+		padding: 1rem;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: var(--radius);
+		background: var(--sl-color-bg);
+		color: var(--sl-color-white);
+	}
+	.cost-dialog::backdrop {
+		background: rgb(0 0 0 / 0.6);
+	}
+	.cost-dialog-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+	.cost-dialog-head h2 {
+		margin: 0;
+		color: var(--sl-color-white);
+		font-size: var(--sl-text-lg);
+		font-weight: 700;
+	}
+	.cost-dialog-head button {
+		min-height: 2.75rem;
+		padding: 0 0.85rem;
+		border: 1px solid var(--sl-color-gray-4);
+		border-radius: var(--radius);
+		background: transparent;
+		color: var(--sl-color-gray-2);
+		cursor: pointer;
+	}
+	.cost-dialog img {
+		display: block;
+		width: 100%;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: var(--radius);
 	}
 	.cost-status {
 		min-height: 1.25rem;
