@@ -30,6 +30,16 @@ const SEGMENTS = [
 ---
 
 <div class="cost-calc not-content" data-fx-example-note={FX_EXAMPLE_NOTE}>
+	<div class="cost-bar">
+		<div class="cost-bar-line">
+			<span>합계</span>
+			<b id="cost-bar-total">0엔</b>
+			<span class="cost-delta" id="cost-bar-delta"></span>
+			<a href="#cost-sheet">내역 보기</a>
+		</div>
+		<div class="cost-split" aria-hidden="true"><div class="is-keep" id="cost-mini-keep"></div><div class="is-gone" id="cost-mini-gone"></div></div>
+	</div>
+
 	<div class="cost-grid">
 		<form id="cost-form" autocomplete="off" novalidate>
 			<div class="cost-presets" role="group" aria-label="예시 조건">
@@ -135,9 +145,10 @@ const SEGMENTS = [
 
 		<aside class="cost-sheet" id="cost-sheet" aria-label="초기비용 견적">
 			<div class="cost-sheet-head"><h2>초기비용 견적</h2><span>예상</span></div>
-			<div class="cost-total" aria-live="polite">
+			<div class="cost-total">
 				<span>계약할 때 내는 돈</span>
-				<strong id="cost-total">0엔</strong>
+				<div class="cost-total-line"><strong id="cost-total">0엔</strong><span class="cost-delta" id="cost-delta"></span></div>
+				<span class="sr-only" id="cost-live" aria-live="polite"></span>
 				<span id="cost-sub"></span>
 			</div>
 			<div class="cost-split" aria-hidden="true"><div class="is-keep" id="cost-bar-keep"></div><div class="is-gone" id="cost-bar-gone"></div></div>
@@ -168,7 +179,6 @@ const SEGMENTS = [
 		<div class="cost-status" id="cost-status" role="status"></div>
 	</dialog>
 
-	<div class="cost-bar"><span>초기비용 합계 <b id="cost-bar-total">0엔</b></span><a href="#cost-sheet">내역 보기</a></div>
 </div>
 
 <script>
@@ -201,12 +211,58 @@ const SEGMENTS = [
 		extras: EXTRAS.map((x) => ({ label: x.label, note: x.note, amount: num($(`a-${x.id}`)), on: $(`x-${x.id}`).checked })),
 	});
 
+	// 조건을 바꾸면 합계가 굴러가듯 바뀌고, 얼마나 늘고 줄었는지 잠깐 보여 준다.
+	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	let shownTotal = 0;
+	let targetTotal: number | null = null;
+	let frame = 0;
+	let deltaTimer = 0;
+	let liveTimer = 0;
+	let prevAmounts = new Map<string, number>();
+
+	function paintTotal(v: number) {
+		shownTotal = v;
+		$('total').textContent = yen(v);
+		$('bar-total').textContent = yen(v);
+	}
+
+	function showTotal(next: number) {
+		const first = targetTotal === null;
+		const diff = next - (targetTotal ?? next);
+		targetTotal = next;
+		if (first) return paintTotal(next);
+		if (!diff) return;
+
+		const chips = [$('delta'), $('bar-delta')];
+		for (const chip of chips) {
+			chip.textContent = `${diff > 0 ? '+' : '−'}${yen(Math.abs(diff))}`;
+			chip.classList.add('is-on');
+		}
+		clearTimeout(deltaTimer);
+		deltaTimer = window.setTimeout(() => chips.forEach((chip) => chip.classList.remove('is-on')), 1800);
+		clearTimeout(liveTimer);
+		liveTimer = window.setTimeout(() => {
+			$('live').textContent = `합계 ${yen(next)}`;
+		}, 600);
+
+		cancelAnimationFrame(frame);
+		if (reduceMotion.matches) return paintTotal(next);
+		const from = shownTotal;
+		const start = performance.now();
+		const step = (now: number) => {
+			const p = Math.min((now - start) / 250, 1);
+			paintTotal(from + (next - from) * (1 - (1 - p) ** 3));
+			if (p < 1) frame = requestAnimationFrame(step);
+		};
+		frame = requestAnimationFrame(step);
+	}
+
 	function render() {
 		const s = read();
 		const r = calcCost(s);
 		const fx = num($('fx'));
-		$('total').textContent = yen(r.total);
-		$('bar-total').textContent = yen(r.total);
+		const firstRender = targetTotal === null;
+		showTotal(r.total);
 		$('sub').textContent = [
 			r.months ? `집세의 ${r.months.toFixed(1)}개월분` : '',
 			fx ? `${man((r.total * fx) / 100)} (100엔 = ${fx}원)` : '',
@@ -214,14 +270,17 @@ const SEGMENTS = [
 			.filter(Boolean)
 			.join(' · ');
 		const keepPct = r.total ? (r.keep / r.total) * 100 : 0;
-		$('bar-keep').style.width = `${keepPct}%`;
-		$('bar-gone').style.width = `${r.total ? 100 - keepPct : 0}%`;
+		for (const id of ['bar', 'mini']) {
+			$(`${id}-keep`).style.width = `${keepPct}%`;
+			$(`${id}-gone`).style.width = `${r.total ? 100 - keepPct : 0}%`;
+		}
 		$('keep').textContent = yen(r.keep);
 		$('gone').textContent = yen(r.gone);
 		$('items').replaceChildren(
 			...r.items.map((it) => {
 				const row = document.createElement('div');
 				if (!it.amount) row.className = 'is-zero';
+				if (!firstRender && prevAmounts.get(it.label) !== it.amount) row.classList.add('is-changed');
 				const dt = document.createElement('dt');
 				dt.textContent = it.label;
 				if (it.amount) {
@@ -241,6 +300,7 @@ const SEGMENTS = [
 				return row;
 			}),
 		);
+		prevAmounts = new Map(r.items.map((it) => [it.label, it.amount]));
 		return { s, r, fx, sub: $('sub').textContent ?? '' };
 	}
 
@@ -328,12 +388,12 @@ const SEGMENTS = [
 		document.querySelector('.cost-fallback')?.remove();
 		png = await drawShareCard({
 			total: yen(r.total),
-			sub,
+			sub: sub.split(' · '),
 			keep: yen(r.keep),
 			gone: yen(r.gone),
 			keepRatio: r.total ? r.keep / r.total : 0,
 			items: r.items.filter((it) => it.amount).map((it) => ({ label: it.label, amount: yen(it.amount) })),
-			footer: `일본 정착 기초 가이드 · ${location.host}`,
+			footer: ['일본 정착 기초 가이드', location.host],
 		});
 		const file = new File([png], FILE_NAME, { type: 'image/png' });
 		URL.revokeObjectURL(image.src);
@@ -416,7 +476,8 @@ const SEGMENTS = [
 		--c-gone: var(--krds-color-light-danger-30);
 		--c-gone-soft: var(--krds-color-light-danger-90);
 		margin-block: 1.5rem;
-		font-size: var(--sl-text-sm);
+		font-size: 0.9375rem;
+		overflow-wrap: anywhere;
 	}
 	:root[data-theme='light'] .cost-calc {
 		--c-keep: var(--krds-color-light-success-60);
@@ -426,6 +487,8 @@ const SEGMENTS = [
 	}
 	.cost-grid {
 		display: grid;
+		/* minmax(0, ...)가 없으면 긴 글자에 맞춰 칸이 화면보다 넓어진다 */
+		grid-template-columns: minmax(0, 1fr);
 		gap: 1.5rem;
 		align-items: start;
 	}
@@ -433,14 +496,18 @@ const SEGMENTS = [
 		display: block;
 		color: var(--sl-color-gray-3);
 		font-size: var(--sl-text-xs);
-		line-height: 1.5;
+		line-height: 1.55;
 	}
+	/* 한국어 이름과 일본어 원어를 한 줄에 몰아넣지 않고 원어는 아랫줄에 둔다 */
 	.cost-calc .ja-term {
+		display: block;
 		font-size: var(--sl-text-xs);
 		font-weight: 400;
+		line-height: 1.5;
 	}
 	.cost-calc .ja-word {
 		color: var(--sl-color-gray-2);
+		white-space: normal;
 	}
 	.cost-calc input,
 	.cost-calc button {
@@ -459,7 +526,12 @@ const SEGMENTS = [
 		margin-bottom: 1rem;
 		color: var(--sl-color-gray-3);
 	}
+	.cost-presets span {
+		flex-basis: 100%;
+		font-size: var(--sl-text-xs);
+	}
 	.cost-presets button {
+		flex: 1 1 auto;
 		min-height: 2.75rem;
 		padding: 0 0.85rem;
 		border: 1px solid var(--sl-color-gray-4);
@@ -520,6 +592,7 @@ const SEGMENTS = [
 		border-radius: var(--radius);
 		background: var(--sl-color-bg);
 		color: var(--sl-color-white);
+		text-align: left;
 	}
 	.cost-money input {
 		padding-right: 2.25rem;
@@ -559,7 +632,7 @@ const SEGMENTS = [
 	}
 	.cost-seg span {
 		display: block;
-		padding: 0.6rem 0.2rem;
+		padding: 0.7rem 0.2rem;
 		text-align: center;
 		white-space: nowrap;
 	}
@@ -589,7 +662,7 @@ const SEGMENTS = [
 	}
 	.cost-extra {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 8.5rem;
+		grid-template-columns: minmax(0, 1fr) 7.5rem;
 		gap: 0.75rem;
 		align-items: center;
 	}
@@ -600,7 +673,7 @@ const SEGMENTS = [
 		border-radius: var(--radius);
 		background: var(--sl-color-bg);
 		color: var(--sl-color-white);
-		scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
+		scroll-margin-top: calc(var(--sl-nav-height) + 6rem);
 	}
 	.cost-sheet-head {
 		display: flex;
@@ -621,6 +694,24 @@ const SEGMENTS = [
 		gap: 0.1rem;
 		padding-block: 1rem 0.75rem;
 		color: var(--sl-color-gray-3);
+	}
+	.cost-total-line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 0.6rem;
+	}
+	.cost-delta {
+		color: var(--sl-color-text-accent);
+		font-size: var(--sl-text-sm);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	.cost-delta.is-on {
+		opacity: 1;
 	}
 	.cost-total strong {
 		color: var(--sl-color-white);
@@ -682,6 +773,22 @@ const SEGMENTS = [
 	}
 	.cost-calc .is-zero {
 		color: var(--sl-color-gray-3);
+	}
+	.cost-calc dl > .is-changed {
+		animation: cost-changed 0.9s ease-out;
+	}
+	@keyframes cost-changed {
+		from {
+			background: var(--sl-color-accent-low);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cost-calc dl > .is-changed {
+			animation: none;
+		}
+		.cost-delta {
+			transition: none;
+		}
 	}
 	.cost-tag {
 		margin-inline-start: 0.4rem;
@@ -773,26 +880,39 @@ const SEGMENTS = [
 		font-size: var(--sl-text-xs);
 	}
 
-	/* 좁은 화면: 합계가 계산기 끝까지 아래에 붙어 따라온다. sticky라 본문과 푸터는 가리지 않는다 */
+	/* 좁은 화면: 합계를 계산기 위쪽에 붙여 둔다. 아래쪽에 두면 입력할 때 키보드에 가려진다 */
 	.cost-bar {
 		position: sticky;
-		bottom: 0;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 0.75rem;
-		margin-top: 1rem;
-		padding: 0.6rem 0.85rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+		top: var(--sl-nav-height);
+		z-index: 2;
+		margin-bottom: 1rem;
+		padding: 0.5rem 0.75rem 0.6rem;
+		border: 1px solid var(--sl-color-hairline);
 		border-radius: var(--radius);
-		background: var(--sl-color-white);
-		color: var(--sl-color-black);
+		background: var(--sl-color-bg);
+		box-shadow: 0 6px 12px -8px rgb(0 0 0 / 0.35);
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
+	}
+	.cost-bar-line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 0.5rem;
+		margin-bottom: 0.4rem;
 	}
 	.cost-bar b {
+		color: var(--sl-color-white);
 		font-size: var(--sl-text-lg);
 		font-variant-numeric: tabular-nums;
 	}
+	.cost-bar .cost-delta {
+		font-size: var(--sl-text-xs);
+	}
 	.cost-bar a {
-		color: inherit;
+		margin-inline-start: auto;
+		color: var(--sl-color-text-accent);
+		white-space: nowrap;
 	}
 
 	@media (min-width: 72rem) {
@@ -802,6 +922,9 @@ const SEGMENTS = [
 		.cost-sheet {
 			position: sticky;
 			top: calc(var(--sl-nav-height) + 1rem);
+			/* 항목이 많아도 합계는 화면에 남고 내역만 스크롤된다 */
+			max-height: calc(100dvh - var(--sl-nav-height) - 2rem);
+			overflow-y: auto;
 		}
 		.cost-bar {
 			display: none;
