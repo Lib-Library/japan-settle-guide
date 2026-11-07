@@ -3,6 +3,8 @@
 import Ja from './Ja.astro';
 import { EXTRAS, PRESETS } from '../lib/initial-cost';
 
+const FX_EXAMPLE_NOTE = '예시 환율입니다. 송금 당일 환율로 고쳐 넣으세요.';
+
 const SEGMENTS = [
 	{
 		name: 'shiki', label: '시키킨 (보증금)', ja: '敷金', reading: '시키킨', checked: '1',
@@ -27,7 +29,7 @@ const SEGMENTS = [
 ];
 ---
 
-<div class="cost-calc not-content">
+<div class="cost-calc not-content" data-fx-example-note={FX_EXAMPLE_NOTE}>
 	<div class="cost-grid">
 		<form id="cost-form" autocomplete="off" novalidate>
 			<div class="cost-presets" role="group" aria-label="예시 조건">
@@ -125,8 +127,8 @@ const SEGMENTS = [
 				<legend>원화 환산</legend>
 				<div class="cost-field cost-fx">
 					<label for="cost-fx">100엔당 원화</label>
-					<div class="cost-money"><input id="cost-fx" inputmode="decimal" value="930" /><span>원</span></div>
-					<small>예시 환율입니다. 송금 당일 환율로 고쳐 넣으세요.</small>
+					<div class="cost-money"><input id="cost-fx" inputmode="decimal" value="860" /><span>원</span></div>
+					<small id="cost-fx-note">{FX_EXAMPLE_NOTE}</small>
 				</div>
 			</fieldset>
 		</form>
@@ -262,8 +264,37 @@ const SEGMENTS = [
 		});
 	});
 
+	// 유럽중앙은행 기준환율(영업일 하루 1회 갱신). 받지 못하면 입력칸의 예시 환율을 그대로 쓴다.
+	let liveFx: { value: string; note: string } | null = null;
+	let fxEdited = false;
+	const showFx = () => {
+		if (liveFx) $('fx').value = liveFx.value;
+		$('fx-note').textContent = liveFx?.note ?? form.closest<HTMLElement>('.cost-calc')!.dataset.fxExampleNote!;
+	};
+	$('fx').addEventListener('input', () => {
+		fxEdited = true;
+		$('fx-note').textContent = '직접 입력한 환율로 계산합니다. 「처음 값으로」를 누르면 최신 환율로 돌아갑니다.';
+	});
+	fetch('https://api.frankfurter.dev/v1/latest?base=JPY&symbols=KRW', { signal: AbortSignal.timeout(5000) })
+		.then((res) => res.json())
+		.then((data) => {
+			const rate = data.rates.KRW * 100;
+			if (!(rate > 0)) return;
+			const [, m, d] = data.date.split('-').map(Number);
+			liveFx = {
+				value: rate.toFixed(1),
+				note: `${m}월 ${d}일 유럽중앙은행 기준환율입니다. 은행 송금 환율과 다르니 송금할 때 환율로 고쳐 넣으세요.`,
+			};
+			if (fxEdited) return;
+			showFx();
+			render();
+		})
+		.catch(() => {});
+
 	$('reset').addEventListener('click', () => {
 		form.reset();
+		fxEdited = false;
+		showFx();
 		$('date').value = defaultMoveIn();
 		applyPreset('std');
 	});

@@ -11,6 +11,8 @@ sources:
     url: https://www.mlit.go.jp/totikensangyo/const/1_6_bf_000013.html
   - label: 국토교통성 – 집구하기 가이드북 (한국어 PDF)
     url: https://www.mlit.go.jp/common/001317846.pdf
+  - label: 유럽중앙은행 – Euro foreign exchange reference rates (원화 환산 기준환율)
+    url: https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
   - label: UR都市機構 – UR賃貸住宅 メリット・特徴
     url: https://www.ur-net.go.jp/chintai/whats/merit/
 ---
@@ -18,7 +20,7 @@ sources:
 import InitialCostCalculator from '../../../components/InitialCostCalculator.astro';
 import Ja from '../../../components/Ja.astro';
 
-집세와 계약 조건을 넣으면 계약할 때 한 번에 내는 돈, 곧 초기비용 <Ja t="初期費用" r="쇼키 히요" />을 항목별로 계산합니다. 중개소에서 받은 견적서와 나란히 놓고 비교해 보세요. 항목별 설명은 [주거 가이드](/topics/housing/)에, 일본어 용어는 [용어집](/glossary/)에 있습니다. 입력값은 브라우저에서만 계산하며 서버에 저장하지 않습니다.
+집세와 계약 조건을 넣으면 계약할 때 한 번에 내는 돈, 곧 초기비용 <Ja t="初期費用" r="쇼키 히요" />을 항목별로 계산합니다. 중개소에서 받은 견적서와 나란히 놓고 비교해 보세요. 항목별 설명은 [주거 가이드](/topics/housing/)에, 일본어 용어는 [용어집](/glossary/)에 있습니다. 입력값은 브라우저에서만 계산하며 서버에 저장하지 않습니다. 원화 환산에 쓰는 환율만 외부 환율 서비스에서 받아 오고, 입력값은 보내지 않습니다.
 
 <InitialCostCalculator />
 
