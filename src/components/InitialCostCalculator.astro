@@ -153,12 +153,6 @@ const SEGMENTS = [
 			<dl id="cost-items"></dl>
 			<p class="cost-card-foot" id="cost-items-foot"></p>
 		</section>
-
-		<section class="cost-card" aria-labelledby="cost-chart-title">
-			<div class="cost-card-head"><h2 id="cost-chart-title">비용 구성</h2></div>
-			<p class="cost-hint">입력한 조건으로 자동 생성합니다. 막대 길이는 합계에서 차지하는 비율입니다.</p>
-			<div class="cost-chart" id="cost-chart"></div>
-		</section>
 		</div>
 
 		<aside class="cost-side" aria-label="입력 진행과 합계">
@@ -333,22 +327,6 @@ const SEGMENTS = [
 			}),
 		);
 		$('items-foot').textContent = `총 ${shownItems.length}개 항목 · 돌려받을 수 있는 돈 ${yen(r.keep)}`;
-		// 일정표처럼 앞 항목이 끝난 지점에서 다음 막대가 시작한다
-		let offset = 0;
-		$('chart').replaceChildren(
-			...shownItems.map((it) => {
-				const share = (it.amount / r.total) * 100;
-				const row = el('div', 'cost-chart-row', '');
-				const track = el('div', 'cost-chart-track', '');
-				const bar = el('div', it.keep ? 'is-keep' : 'is-gone', '');
-				bar.style.marginInlineStart = `${offset}%`;
-				bar.style.width = `${share}%`;
-				offset += share;
-				track.append(bar);
-				row.append(el('span', '', it.label), track);
-				return row;
-			}),
-		);
 		prevAmounts = new Map(r.items.map((it) => [it.label, it.amount]));
 		return { s, r, fx, sub: $('sub').textContent ?? '' };
 	}
@@ -697,11 +675,6 @@ const SEGMENTS = [
 		font-size: var(--sl-text-xs);
 		text-align: end;
 	}
-	.cost-card > .cost-hint {
-		margin-top: 0.5rem;
-		color: var(--sl-color-gray-3);
-		font-size: var(--sl-text-xs);
-	}
 	.cost-row {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
@@ -1037,25 +1010,6 @@ const SEGMENTS = [
 		}
 	}
 
-	.cost-chart {
-		display: grid;
-		gap: 0.6rem;
-		margin-top: 0.75rem;
-	}
-	.cost-chart-row {
-		display: grid;
-		gap: 0.2rem;
-		font-size: var(--sl-text-xs);
-	}
-	.cost-chart-track {
-		height: 0.9rem;
-		background: var(--sl-color-gray-6);
-	}
-	.cost-chart-track div {
-		height: 100%;
-		background: var(--c);
-	}
-
 	.cost-actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -1208,11 +1162,6 @@ const SEGMENTS = [
 		}
 		.cost-items-head span:nth-child(n + 3) {
 			text-align: end;
-		}
-		.cost-chart-row {
-			grid-template-columns: 8.5rem minmax(0, 1fr);
-			gap: 0.75rem;
-			align-items: center;
 		}
 	}
 </style>
