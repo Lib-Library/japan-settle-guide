@@ -7,6 +7,7 @@ order: 30
 optional: true
 where: 관할 세무서 또는 국세청 「確定申告書等作成コーナー」(온라인)
 deadline: 다음 해 2월 16일~3월 15일 (환급 신고는 다음 해 1월 1일부터 5년 동안 가능)
+due: { kind: yearly, yearOffset: 1, month: 3, day: 15 }
 bring:
   - 원천징수표 (회사에서 받은 것)
   - 마이넘버

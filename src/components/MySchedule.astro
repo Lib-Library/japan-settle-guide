@@ -1,0 +1,74 @@
+---
+// 내 일정: 입국일 입력칸 + 묶음별 할 일 목록. 목록은 브라우저에서 그린다 (src/scripts/schedule.ts).
+import { getCollection } from 'astro:content';
+import ArrivalInput from './ArrivalInput.astro';
+
+const tasks = (await getCollection('tasks')).map((t) => ({
+	id: t.id,
+	title: t.data.title,
+	phase: t.data.phase,
+	deadline: t.data.deadline,
+	optional: t.data.optional,
+	due: t.data.due,
+}));
+const json = JSON.stringify(tasks).replace(/</g, '\\u003c');
+
+const GROUPS = [
+	['overdue', '지난 기한'],
+	['thisWeek', '이번 주 (오늘 포함 7일)'],
+	['upcoming', '다가오는 일'],
+	['undated', '날짜 없는 일'],
+	['done', '완료한 일'],
+] as const;
+---
+
+<div class="schedule not-content">
+	<ArrivalInput id="arrival-my" showCta={false} />
+
+	<div data-schedule hidden>
+		<button type="button" class="arrival-submit" data-ics-all>휴대폰 캘린더에 전부 넣기</button>
+		<p class="task-hint">
+			날짜가 있고 아직 안 한 일만 넣습니다. [예상]은 입국일로 어림한 날짜, [권장]은 이 사이트가 권하는 시기(법정 기한
+			아님)입니다.
+		</p>
+		{
+			GROUPS.map(([key, label], i) => (
+				<details class="schedule-group" data-group={key} open={i < 2}>
+					<summary>
+						{label} (<span data-group-count>0</span>)
+					</summary>
+					<ul class="schedule-list" data-group-list />
+				</details>
+			))
+		}
+	</div>
+
+	<div class="schedule-sample" data-schedule-empty>
+		<p class="schedule-sample-title">입국일을 넣으면 이렇게 보여요</p>
+		<ul class="schedule-list" aria-hidden="true">
+			<li class="schedule-item">
+				<span class="task-check-wrap"></span>
+				<div>
+					<span class="schedule-title">전입신고 하기 (주소 등록)</span>
+					<p class="schedule-when">12월 15일까지 · 6일 남음 <span class="due-badge">예상</span></p>
+				</div>
+			</li>
+			<li class="schedule-item">
+				<span class="task-check-wrap"></span>
+				<div>
+					<span class="schedule-title">우리 동네 쓰레기 배출 규칙 확인하기</span>
+					<p class="schedule-when">12월 15일까지 · 6일 남음 <span class="due-badge">권장</span></p>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<script type="application/json" id="jsg-task-data" set:html={json} />
+
+<script>
+	import { initChecklist } from '../scripts/checklist';
+	import { initSchedule } from '../scripts/schedule';
+	initChecklist();
+	initSchedule();
+</script>

@@ -1,0 +1,109 @@
+---
+// 할 일 개별 페이지의 "내 마감일" 상자. 입국일이 없으면 입력칸을 보여 준다.
+// 귀국 시기 항목처럼 날짜를 만들 수 없으면 상자를 그리지 않는다.
+import type { CollectionEntry } from 'astro:content';
+import ArrivalInput from './ArrivalInput.astro';
+import { PHASE_WINDOW_DAYS } from '../lib/due';
+
+interface Props {
+	task: CollectionEntry<'tasks'>;
+}
+const { task } = Astro.props;
+const { phase, due, deadline, title } = task.data;
+const datable = due ? due.kind !== 'none' : PHASE_WINDOW_DAYS[phase] != null;
+---
+
+{
+	datable && (
+		<section
+			class="my-due not-content"
+			data-my-due
+			data-id={task.id}
+			data-title={title}
+			data-phase={phase}
+			data-due={due ? JSON.stringify(due) : ''}
+			data-deadline={deadline}
+			aria-labelledby="my-due-title"
+		>
+			<h2 id="my-due-title" class="my-due-title">
+				내 마감일
+			</h2>
+			<div data-my-due-result hidden>
+				<p class="my-due-date">
+					<strong data-my-due-text tabindex="-1" />
+					<span class="due-badge" data-my-due-badge hidden />
+				</p>
+				<p class="my-due-basis" data-my-due-basis />
+				<label class="my-due-done">
+					<input class="task-check" type="checkbox" data-task-id={task.id} />
+					완료로 표시
+				</label>
+				<div class="arrival-actions">
+					<button type="button" class="arrival-submit" data-ics-one>
+						캘린더에 넣기
+					</button>
+					<button type="button" class="arrival-link" data-my-due-edit>
+						입국일 바꾸기
+					</button>
+					<a class="arrival-link" href="/my/">
+						내 일정 전체 보기
+					</a>
+				</div>
+			</div>
+			<div data-my-due-empty>
+				<ArrivalInput id="arrival-task" />
+			</div>
+		</section>
+	)
+}
+
+<script>
+	import { planItem, todayYmd, type Due, type PlanItem } from '../lib/due';
+	import { taskEvent } from '../lib/ics';
+	import { editArrival, getArrival, onArrivalChange } from '../scripts/arrival';
+	import { BADGE, downloadIcs, dueText } from '../scripts/calendar';
+
+	const box = document.querySelector<HTMLElement>('[data-my-due]');
+	let current: PlanItem | null = null;
+
+	function render() {
+		if (!box) return;
+		const arrival = getArrival();
+		const result = box.querySelector<HTMLElement>('[data-my-due-result]')!;
+		const empty = box.querySelector<HTMLElement>('[data-my-due-empty]')!;
+		// 입력칸에서 저장하면 입력칸이 숨겨지므로, 포커스를 결과 날짜로 옮긴다
+		if (arrival && empty.contains(document.activeElement)) {
+			setTimeout(() => box.querySelector<HTMLElement>('[data-my-due-text]')!.focus());
+		}
+		empty.hidden = Boolean(arrival);
+		result.hidden = !arrival;
+		if (!arrival) return;
+		const { id, phase, due, deadline } = box.dataset;
+		current = planItem({ id: id!, phase: phase!, due: due ? (JSON.parse(due) as Due) : undefined }, arrival);
+		const today = todayYmd();
+		box.querySelector('[data-my-due-text]')!.textContent = dueText(current, today);
+		const badge = box.querySelector<HTMLElement>('[data-my-due-badge]')!;
+		badge.hidden = !BADGE[current.kind];
+		badge.textContent = BADGE[current.kind] ?? '';
+		const basis =
+			current.kind === 'estimate'
+				? `입국일로 어림한 날짜예요. 실제 기준: ${deadline}`
+				: current.kind === 'window'
+					? `이 사이트가 권하는 시기예요 (법정 기한 아님). 기준: ${deadline}`
+					: `기준: ${deadline}`;
+		box.querySelector('[data-my-due-basis]')!.textContent = basis;
+	}
+
+	render();
+	onArrivalChange(render);
+	// 결과 대신 입력칸을 다시 보여 준다. 저장하면 onArrivalChange로 결과 화면으로 돌아온다.
+	box?.querySelector('[data-my-due-edit]')?.addEventListener('click', () => {
+		box.querySelector<HTMLElement>('[data-my-due-result]')!.hidden = true;
+		box.querySelector<HTMLElement>('[data-my-due-empty]')!.hidden = false;
+		editArrival(box.querySelector<HTMLElement>('[data-arrival]')!);
+	});
+	box?.querySelector('[data-ics-one]')?.addEventListener('click', () => {
+		if (!current) return;
+		downloadIcs([taskEvent({ id: box.dataset.id!, title: box.dataset.title! }, current, location.origin)], `${box.dataset.id}.ics`);
+	});
+</script>

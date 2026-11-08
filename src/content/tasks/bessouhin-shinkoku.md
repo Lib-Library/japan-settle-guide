@@ -7,6 +7,7 @@ order: 50
 optional: true
 where: 일본 도착 공항의 세관 검사대
 deadline: 입국할 때 (짐은 입국 후 6개월 안에 통관되는 것만 해당)
+due: { kind: arrival, days: 0 }
 bring:
   - 携帯品・別送品申告書 2통
   - 이삿짐 목록 (해외이사 업체가 만들어 주는 경우가 많음)

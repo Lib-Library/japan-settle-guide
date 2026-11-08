@@ -19,3 +19,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# 작업 도구 임시 파일 (.omc/specs 는 기록으로 남긴다)
+.omc/*
+!.omc/specs/
+.superpowers/
+.playwright-mcp/

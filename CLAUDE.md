@@ -13,7 +13,7 @@
 
 ## 구조
 
-- `src/content/tasks/*.md` — 체크리스트 항목(40개). 스키마는 `src/content.config.ts`
+- `src/content/tasks/*.md` — 체크리스트 항목(37개). 스키마는 `src/content.config.ts`
 - `src/content/docs/` — 홈, `timeline/`(시기 5개), `topics/`(주제 9개), `glossary.mdx`, `about.md`. 모든 페이지에 `lastVerified` 필수
 - `src/lib/taxonomy.ts` — PHASES/TOPICS 단일 출처. 새 시기·주제는 여기에 추가 (`work`, `family` 주제는 정의만 있고 항목 없음)
 - `src/components/` — TaskCard/TaskList/PhasePicker/ProgressBar/Sources/Ja/ExpertNote/VerifyText, `overrides/`는 Starlight 컴포넌트 교체
@@ -21,6 +21,10 @@
 - `src/scripts/checklist.ts` — 진행 상황을 localStorage(`jsg:progress:v1`)에 저장. 서버·계정 없음
 - 사이드바는 `astro.config.mjs`에 수동 정의(topics만 autogenerate)
 - 디자인: KRDS(`krds-uiux`) 토큰(`krds_tokens.css`)을 `customCss`로 불러오고 `src/styles/custom.css`에서 Starlight 변수에 연결. KRDS 토큰은 라이트 전용이라 다크는 같은 팔레트의 어두운 단계로 직접 지정
+- `src/pages/tasks/[id].astro` — 할 일 개별 페이지 (URL = tasks 파일명). `src/content/docs/my.mdx` — 내 일정
+- `src/lib/due.ts`·`src/lib/ics.ts` — 입국일 마감일 계산·캘린더 파일 (검사: `scripts/check-due.mjs`). tasks의 `due` 필드는 `deadline` 문장의 숫자만 쓴다
+- `src/scripts/arrival.ts` — 입국일을 localStorage(`jsg:arrival:v1`)에 저장
+- 방문 통계·카드뉴스 링크 규칙: `docs/analytics.md` (토큰은 환경 변수 `PUBLIC_CF_BEACON_TOKEN`)
 
 ## 반드시 지킬 규칙
 
@@ -36,3 +40,4 @@
 ## 알려진 주의점
 
 - 외부 CDN(Pretendard, Google Fonts)에 의존한다 (`astro.config.mjs` head).
+- 공유 이미지 `public/og.png`는 `node scripts/make-og.mjs`로 다시 만든다.

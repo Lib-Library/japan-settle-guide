@@ -5,6 +5,7 @@ topic: korea
 order: 30
 where: 국민연금공단 (전화 1355, 홈페이지·「내 곁에 국민연금」 앱)
 deadline: 출국 전 (출국 후에도 신청 가능)
+due: { kind: estimate, days: 0 }
 bring:
   - 필요 서류는 신청 방법마다 다름 — 1355에 전화해 확인
 sources:

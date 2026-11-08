@@ -10,8 +10,12 @@ import { phaseOf } from '../lib/taxonomy';
 interface Props {
 	task: CollectionEntry<'tasks'>;
 	showPhase?: boolean;
+	/** 처음부터 펼쳐 보여 줄지 (할 일 개별 페이지) */
+	open?: boolean;
+	/** 할 일 개별 페이지 안이면 true — 자기 페이지 링크를 숨긴다 */
+	standalone?: boolean;
 }
-const { task, showPhase = false } = Astro.props;
+const { task, showPhase = false, open = false, standalone = false } = Astro.props;
 const { data } = task;
 const { Content } = await render(task);
 const inputId = `task-${task.id}`;
@@ -28,7 +32,7 @@ const phase = phaseOf(data.phase);
 			aria-label={`${data.title} 완료 표시`}
 		/>
 	</label>
-	<details class="task-details">
+	<details class="task-details" open={open}>
 		<summary>
 			<span class="task-title">
 				{data.title}
@@ -71,5 +75,6 @@ const phase = phaseOf(data.phase);
 		</div>
 
 		<Sources sources={data.sources} lastVerified={data.lastVerified} />
+		{!standalone && <a class="task-permalink" href={`/tasks/${task.id}/`}>이 할 일 페이지로 가기 →</a>}
 	</details>
 </div>

@@ -6,6 +6,7 @@ topic: insurance-tax
 order: 20
 where: 1월 1일에 주소가 있던 시·구·정·촌 (급여에서 회사가 공제해 납부)
 deadline: 일본에 온 다음 해 6월부터 급여 공제 시작 (일본을 떠날 때는 출국 전에 정리)
+due: { kind: none }
 bring: []
 sources:
   - label: 총무성 – 外国人の方の個人住民税について

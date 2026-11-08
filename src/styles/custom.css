@@ -507,3 +507,190 @@ site-search button {
 		transition: none;
 	}
 }
+
+/* 입국일 입력칸 */
+.arrival {
+	margin-block: 1.5rem;
+	padding: 1rem;
+	border: 1px solid var(--sl-color-hairline);
+	border-radius: var(--radius);
+	background: var(--sl-color-gray-7, var(--sl-color-gray-6));
+}
+.arrival-label {
+	display: block;
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+}
+.arrival-row,
+.arrival-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+}
+.arrival-input {
+	flex: 1 1 10rem;
+	min-height: 44px;
+	padding: 0 0.75rem;
+	font: inherit;
+	border: 1px solid var(--sl-color-gray-4);
+	border-radius: var(--radius);
+	background: var(--sl-color-black);
+	color: var(--sl-color-white);
+}
+.arrival-submit,
+.arrival-cta {
+	min-height: 44px;
+	padding: 0 1rem;
+	display: inline-flex;
+	align-items: center;
+	font: inherit;
+	font-weight: 700;
+	border: 0;
+	border-radius: var(--radius);
+	background: var(--sl-color-accent);
+	color: var(--c-on-accent);
+	text-decoration: none;
+	cursor: pointer;
+}
+.arrival-link {
+	min-height: 44px;
+	padding: 0 0.5rem;
+	font: inherit;
+	border: 0;
+	background: none;
+	color: var(--sl-color-text-accent);
+	text-decoration: underline;
+	cursor: pointer;
+}
+.arrival-error {
+	margin: 0.5rem 0 0;
+	color: var(--c-mark-fg);
+	font-weight: 700;
+}
+.arrival-hint {
+	margin: 0.5rem 0 0;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+.arrival-summary {
+	margin: 0 0 0.5rem;
+	font-weight: 700;
+}
+
+/* 할 일 개별 페이지 */
+.task-breadcrumb {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+.task-permalink {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	font-weight: 700;
+}
+.my-due {
+	margin-block: 1rem 1.5rem;
+	padding: 1rem;
+	border: 2px solid var(--sl-color-accent);
+	border-radius: var(--radius);
+}
+.my-due .arrival {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+}
+.my-due .my-due-title {
+	margin: 0 0 0.5rem;
+	font-size: var(--sl-text-lg);
+}
+.my-due-date {
+	margin: 0;
+	font-size: var(--sl-text-lg);
+}
+.my-due-basis {
+	margin: 0.25rem 0 0.75rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+.due-badge {
+	display: inline-block;
+	margin-left: 0.25rem;
+	padding: 0 0.5rem;
+	border-radius: 999px;
+	font-size: var(--sl-text-xs);
+	font-weight: 700;
+	vertical-align: middle;
+	background: var(--c-mark-bg);
+	color: var(--c-mark-fg);
+}
+
+/* 내 일정 */
+.schedule-group {
+	margin-block: 1rem;
+	border-top: 1px solid var(--sl-color-hairline);
+}
+.schedule-group > summary {
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	font-weight: 700;
+	cursor: pointer;
+}
+.schedule-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.schedule-item {
+	display: flex;
+	gap: 0.75rem;
+	align-items: flex-start;
+	padding-block: 0.5rem;
+}
+.schedule-item.is-done .schedule-title {
+	text-decoration: line-through;
+	color: var(--sl-color-gray-3);
+}
+.schedule-title {
+	font-weight: 700;
+}
+.schedule-when {
+	margin: 0.125rem 0 0;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+.schedule-sample {
+	opacity: 0.6;
+}
+.schedule-sample-title {
+	font-weight: 700;
+}
+.schedule-group > summary::before {
+	content: '▸';
+	margin-right: 0.5rem;
+}
+.schedule-group[open] > summary::before {
+	content: '▾';
+}
+.due-badge[hidden] {
+	display: none;
+}
+.schedule-basis {
+	margin: 0.125rem 0 0;
+	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-3);
+}
+.schedule-when.is-overdue {
+	color: var(--c-mark-fg);
+	font-weight: 700;
+}
+.my-due-done {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 44px;
+	margin-bottom: 0.5rem;
+	font-weight: 700;
+}

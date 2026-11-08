@@ -1,0 +1,54 @@
+---
+// 할 일 하나의 개별 페이지 (검색으로 들어오는 곳). URL은 tasks 파일명 그대로.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import TaskCard from '../../components/TaskCard.astro';
+import MyDue from '../../components/MyDue.astro';
+import { phaseOf } from '../../lib/taxonomy';
+
+type Task = CollectionEntry<'tasks'>;
+
+export async function getStaticPaths() {
+	const tasks = (await getCollection('tasks')).sort(
+		(a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'ko'),
+	);
+	return tasks.map((task) => {
+		const siblings = tasks.filter((t) => t.data.phase === task.data.phase);
+		const i = siblings.indexOf(task);
+		return { params: { id: task.id }, props: { task, prev: siblings[i - 1], next: siblings[i + 1] } };
+	});
+}
+
+interface Props {
+	task: Task;
+	prev?: Task;
+	next?: Task;
+}
+const { task, prev, next } = Astro.props;
+const { data } = task;
+const phase = phaseOf(data.phase)!;
+const term = data.term ? ` ${data.term.ja}(${data.term.reading})` : '';
+const pager = (t?: Task) => (t ? { link: `/tasks/${t.id}/`, label: t.data.title } : false);
+---
+
+<StarlightPage
+	frontmatter={{
+		title: data.title,
+		description: `${data.title}${term} — 어디서 하는지, 언제까지인지, 준비물과 놓치기 쉬운 점을 공식 출처와 함께 정리했습니다.`,
+		lastVerified: data.lastVerified,
+		prev: pager(prev),
+		next: pager(next),
+	}}
+>
+	<p class="task-breadcrumb"><a href={phase.href}>{phase.label}</a> 할 일</p>
+	<MyDue task={task} />
+	<div class="task-list not-content">
+		<TaskCard task={task} open standalone />
+	</div>
+	<p><a href={phase.href}>{phase.label} 할 일 전체 보기</a> · <a href="/my/">내 일정 보기</a></p>
+</StarlightPage>
+
+<script>
+	import { initChecklist } from '../../scripts/checklist';
+	initChecklist();
+</script>

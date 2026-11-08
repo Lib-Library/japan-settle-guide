@@ -5,6 +5,8 @@ import { EXTRAS, PRESETS } from '../lib/initial-cost';
 
 const FX_EXAMPLE_NOTE = '예시 환율입니다. 송금 당일 환율로 고쳐 넣으세요.';
 
+const STEPS = ['매달 내는 돈', '계약 조건', '입주일과 선불 집세', '그 밖의 비용', '원화 환산'];
+
 const SEGMENTS = [
 	{
 		name: 'shiki', label: '시키킨 (보증금)', ja: '敷金', reading: '시키킨', checked: '1',
@@ -30,7 +32,18 @@ const SEGMENTS = [
 ---
 
 <div class="cost-calc not-content" data-fx-example-note={FX_EXAMPLE_NOTE}>
+	<div class="cost-bar">
+		<div class="cost-bar-line">
+			<span>합계</span>
+			<b id="cost-bar-total">0엔</b>
+			<span class="cost-delta" id="cost-bar-delta"></span>
+			<a href="#cost-sheet">내역 보기</a>
+		</div>
+		<div class="cost-split" aria-hidden="true"><div class="is-keep" id="cost-mini-keep"></div><div class="is-gone" id="cost-mini-gone"></div></div>
+	</div>
+
 	<div class="cost-grid">
+		<div class="cost-main">
 		<form id="cost-form" autocomplete="off" novalidate>
 			<div class="cost-presets" role="group" aria-label="예시 조건">
 				<span>예시 조건</span>
@@ -43,7 +56,7 @@ const SEGMENTS = [
 				}
 			</div>
 
-			<fieldset>
+			<fieldset id="cost-s1">
 				<legend>매달 내는 돈</legend>
 				<div class="cost-row">
 					<div class="cost-field">
@@ -57,7 +70,7 @@ const SEGMENTS = [
 				</div>
 			</fieldset>
 
-			<fieldset>
+			<fieldset id="cost-s2">
 				<legend>계약 조건</legend>
 				{
 					SEGMENTS.map((g) => (
@@ -79,9 +92,9 @@ const SEGMENTS = [
 				}
 			</fieldset>
 
-			<fieldset>
+			<fieldset id="cost-s3">
 				<legend>입주일과 선불 집세</legend>
-				<div class="cost-row">
+				<div class="cost-stack">
 					<div class="cost-field">
 						<label for="cost-date">입주(계약 시작)일</label>
 						<input type="date" id="cost-date" />
@@ -97,8 +110,9 @@ const SEGMENTS = [
 				</div>
 			</fieldset>
 
-			<fieldset>
-				<legend>그 밖의 비용 (금액은 직접 고칠 수 있습니다)</legend>
+			<fieldset id="cost-s4">
+				<legend>그 밖의 비용</legend>
+				<small class="cost-hint">금액은 직접 고칠 수 있습니다.</small>
 				{
 					EXTRAS.map((x) => (
 						<div class="cost-extra">
@@ -123,7 +137,7 @@ const SEGMENTS = [
 				}
 			</fieldset>
 
-			<fieldset>
+			<fieldset id="cost-s5">
 				<legend>원화 환산</legend>
 				<div class="cost-field cost-fx">
 					<label for="cost-fx">100엔당 원화</label>
@@ -133,22 +147,50 @@ const SEGMENTS = [
 			</fieldset>
 		</form>
 
-		<aside class="cost-sheet" id="cost-sheet" aria-label="초기비용 견적">
-			<div class="cost-sheet-head"><h2>초기비용 견적</h2><span>예상</span></div>
-			<div class="cost-total" aria-live="polite">
-				<span>계약할 때 내는 돈</span>
-				<strong id="cost-total">0엔</strong>
-				<span id="cost-sub"></span>
-			</div>
-			<div class="cost-split" aria-hidden="true"><div class="is-keep" id="cost-bar-keep"></div><div class="is-gone" id="cost-bar-gone"></div></div>
-			<div class="cost-legend">
-				<span><i class="is-keep"></i>나중에 돌려받을 수 있음 <b id="cost-keep">0엔</b></span>
-				<span><i class="is-gone"></i>돌려받지 못함 <b id="cost-gone">0엔</b></span>
-			</div>
+		<section class="cost-card" id="cost-sheet" aria-labelledby="cost-sheet-title">
+			<div class="cost-card-head"><h2 id="cost-sheet-title">상세 견적</h2><span>예상</span></div>
+			<div class="cost-items-head" aria-hidden="true"><span>항목</span><span>조건</span><span>금액</span><span>구분</span></div>
 			<dl id="cost-items"></dl>
-			<div class="cost-actions">
-				<button type="button" id="cost-share">결과 이미지로 공유</button>
-				<button type="button" id="cost-reset" class="is-ghost">처음 값으로</button>
+			<p class="cost-card-foot" id="cost-items-foot"></p>
+		</section>
+		</div>
+
+		<aside class="cost-side" aria-label="입력 진행과 합계">
+			<nav class="cost-steps" aria-label="입력 진행">
+				<p>입력 진행</p>
+				<ol>
+					{
+						STEPS.map((title, i) => (
+							<li>
+								<a href={`#cost-s${i + 1}`}>
+									<span class="cost-step-n">{i + 1}</span>
+									{title}
+								</a>
+							</li>
+						))
+					}
+				</ol>
+			</nav>
+			<div class="cost-summary">
+				<div class="cost-total">
+					<div class="cost-total-label"><span>계약할 때 내는 돈</span><span class="cost-delta" id="cost-delta"></span></div>
+					<strong id="cost-total">0엔</strong>
+					<span id="cost-sub"></span>
+					<span class="sr-only" id="cost-live" aria-live="polite"></span>
+				</div>
+				<div class="cost-split" aria-hidden="true"><div class="is-keep" id="cost-bar-keep"></div><div class="is-gone" id="cost-bar-gone"></div></div>
+				<div class="cost-legend">
+					<span><i class="is-keep"></i>나중에 돌려받을 수 있음 <b id="cost-keep">0엔</b></span>
+					<span><i class="is-gone"></i>돌려받지 못함 <b id="cost-gone">0엔</b></span>
+				</div>
+				<div class="cost-actions">
+					<button type="button" id="cost-share">결과 이미지로 공유</button>
+					<button type="button" id="cost-reset" class="is-ghost">처음 값으로</button>
+				</div>
+			</div>
+			<div class="cost-guide">
+				<strong>작성 안내</strong>
+				<p>기타 비용과 보증료 기본값은 예시입니다. 받은 견적서의 금액으로 고쳐 넣으세요.</p>
 			</div>
 		</aside>
 	</div>
@@ -168,7 +210,6 @@ const SEGMENTS = [
 		<div class="cost-status" id="cost-status" role="status"></div>
 	</dialog>
 
-	<div class="cost-bar"><span>초기비용 합계 <b id="cost-bar-total">0엔</b></span><a href="#cost-sheet">내역 보기</a></div>
 </div>
 
 <script>
@@ -201,12 +242,58 @@ const SEGMENTS = [
 		extras: EXTRAS.map((x) => ({ label: x.label, note: x.note, amount: num($(`a-${x.id}`)), on: $(`x-${x.id}`).checked })),
 	});
 
+	// 조건을 바꾸면 합계가 굴러가듯 바뀌고, 얼마나 늘고 줄었는지 잠깐 보여 준다.
+	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	let shownTotal = 0;
+	let targetTotal: number | null = null;
+	let frame = 0;
+	let deltaTimer = 0;
+	let liveTimer = 0;
+	let prevAmounts = new Map<string, number>();
+
+	function paintTotal(v: number) {
+		shownTotal = v;
+		$('total').textContent = yen(v);
+		$('bar-total').textContent = yen(v);
+	}
+
+	function showTotal(next: number) {
+		const first = targetTotal === null;
+		const diff = next - (targetTotal ?? next);
+		targetTotal = next;
+		if (first) return paintTotal(next);
+		if (!diff) return;
+
+		const chips = [$('delta'), $('bar-delta')];
+		for (const chip of chips) {
+			chip.textContent = `${diff > 0 ? '+' : '−'}${yen(Math.abs(diff))}`;
+			chip.classList.add('is-on');
+		}
+		clearTimeout(deltaTimer);
+		deltaTimer = window.setTimeout(() => chips.forEach((chip) => chip.classList.remove('is-on')), 1800);
+		clearTimeout(liveTimer);
+		liveTimer = window.setTimeout(() => {
+			$('live').textContent = `합계 ${yen(next)}`;
+		}, 600);
+
+		cancelAnimationFrame(frame);
+		if (reduceMotion.matches) return paintTotal(next);
+		const from = shownTotal;
+		const start = performance.now();
+		const step = (now: number) => {
+			const p = Math.min((now - start) / 250, 1);
+			paintTotal(from + (next - from) * (1 - (1 - p) ** 3));
+			if (p < 1) frame = requestAnimationFrame(step);
+		};
+		frame = requestAnimationFrame(step);
+	}
+
 	function render() {
 		const s = read();
 		const r = calcCost(s);
 		const fx = num($('fx'));
-		$('total').textContent = yen(r.total);
-		$('bar-total').textContent = yen(r.total);
+		const firstRender = targetTotal === null;
+		showTotal(r.total);
 		$('sub').textContent = [
 			r.months ? `집세의 ${r.months.toFixed(1)}개월분` : '',
 			fx ? `${man((r.total * fx) / 100)} (100엔 = ${fx}원)` : '',
@@ -214,33 +301,33 @@ const SEGMENTS = [
 			.filter(Boolean)
 			.join(' · ');
 		const keepPct = r.total ? (r.keep / r.total) * 100 : 0;
-		$('bar-keep').style.width = `${keepPct}%`;
-		$('bar-gone').style.width = `${r.total ? 100 - keepPct : 0}%`;
+		for (const id of ['bar', 'mini']) {
+			$(`${id}-keep`).style.width = `${keepPct}%`;
+			$(`${id}-gone`).style.width = `${r.total ? 100 - keepPct : 0}%`;
+		}
 		$('keep').textContent = yen(r.keep);
 		$('gone').textContent = yen(r.gone);
+		const el = (tag: string, className: string, text: string) => {
+			const node = document.createElement(tag);
+			node.className = className;
+			node.textContent = text;
+			return node;
+		};
+		const shownItems = r.items.filter((it) => it.amount);
 		$('items').replaceChildren(
 			...r.items.map((it) => {
 				const row = document.createElement('div');
 				if (!it.amount) row.className = 'is-zero';
-				const dt = document.createElement('dt');
-				dt.textContent = it.label;
-				if (it.amount) {
-					const tag = document.createElement('span');
-					tag.className = it.keep ? 'cost-tag is-keep' : 'cost-tag is-gone';
-					tag.textContent = it.keep ? '반환' : '소멸';
-					dt.append(tag);
-				}
-				if (it.note) {
-					const note = document.createElement('small');
-					note.textContent = it.note;
-					dt.append(note);
-				}
-				const dd = document.createElement('dd');
-				dd.textContent = yen(it.amount);
-				row.append(dt, dd);
+				if (!firstRender && prevAmounts.get(it.label) !== it.amount) row.classList.add('is-changed');
+				row.append(el('dt', 'cost-item-label', it.label), el('dd', 'cost-item-note', it.note), el('dd', 'cost-item-amount', yen(it.amount)));
+				const tag = el('dd', 'cost-item-tag', '');
+				if (it.amount) tag.append(el('span', `cost-tag ${it.keep ? 'is-keep' : 'is-gone'}`, it.keep ? '반환' : '소멸'));
+				row.append(tag);
 				return row;
 			}),
 		);
+		$('items-foot').textContent = `총 ${shownItems.length}개 항목 · 돌려받을 수 있는 돈 ${yen(r.keep)}`;
+		prevAmounts = new Map(r.items.map((it) => [it.label, it.amount]));
 		return { s, r, fx, sub: $('sub').textContent ?? '' };
 	}
 
@@ -318,6 +405,7 @@ const SEGMENTS = [
 	const status = $('status');
 	const pageUrl = () => `${location.origin}${location.pathname}`;
 	const FILE_NAME = 'japan-initial-cost.png';
+	$('date').value = defaultMoveIn();
 	let shared = render();
 	let png: Blob | null = null;
 
@@ -328,12 +416,12 @@ const SEGMENTS = [
 		document.querySelector('.cost-fallback')?.remove();
 		png = await drawShareCard({
 			total: yen(r.total),
-			sub,
+			sub: sub.split(' · '),
 			keep: yen(r.keep),
 			gone: yen(r.gone),
 			keepRatio: r.total ? r.keep / r.total : 0,
 			items: r.items.filter((it) => it.amount).map((it) => ({ label: it.label, amount: yen(it.amount) })),
-			footer: `일본 정착 기초 가이드 · ${location.host}`,
+			footer: ['일본 정착 기초 가이드', location.host],
 		});
 		const file = new File([png], FILE_NAME, { type: 'image/png' });
 		URL.revokeObjectURL(image.src);
@@ -404,8 +492,31 @@ const SEGMENTS = [
 		}, fallback);
 	});
 
-	$('date').value = defaultMoveIn();
-	render();
+	const sections = [...form.querySelectorAll('fieldset')];
+	const stepItems = [...document.querySelectorAll<HTMLElement>('.cost-steps li')];
+	const setStep = (current: number) =>
+		stepItems.forEach((li, i) => {
+			li.classList.toggle('is-done', i < current);
+			li.classList.toggle('is-current', i === current);
+		});
+	const observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (!entry.isIntersecting) continue;
+				const i = sections.indexOf(entry.target as HTMLFieldSetElement);
+				setStep(i < 0 ? sections.length : i);
+			}
+		},
+		{ rootMargin: '-30% 0px -60% 0px' },
+	);
+	sections.forEach((section) => observer.observe(section));
+	// 결과 영역까지 내려오면 모든 단계를 끝난 것으로 표시한다
+	document.querySelectorAll('.cost-card').forEach((card) => observer.observe(card));
+	form.addEventListener('focusin', (e) => {
+		const section = (e.target as HTMLElement).closest('fieldset');
+		if (section) setStep(sections.indexOf(section));
+	});
+	setStep(0);
 </script>
 
 <style is:global>
@@ -416,7 +527,8 @@ const SEGMENTS = [
 		--c-gone: var(--krds-color-light-danger-30);
 		--c-gone-soft: var(--krds-color-light-danger-90);
 		margin-block: 1.5rem;
-		font-size: var(--sl-text-sm);
+		font-size: 0.9375rem;
+		overflow-wrap: anywhere;
 	}
 	:root[data-theme='light'] .cost-calc {
 		--c-keep: var(--krds-color-light-success-60);
@@ -426,6 +538,8 @@ const SEGMENTS = [
 	}
 	.cost-grid {
 		display: grid;
+		/* minmax(0, ...)가 없으면 긴 글자에 맞춰 칸이 화면보다 넓어진다 */
+		grid-template-columns: minmax(0, 1fr);
 		gap: 1.5rem;
 		align-items: start;
 	}
@@ -433,14 +547,18 @@ const SEGMENTS = [
 		display: block;
 		color: var(--sl-color-gray-3);
 		font-size: var(--sl-text-xs);
-		line-height: 1.5;
+		line-height: 1.55;
 	}
+	/* 한국어 이름과 일본어 원어를 한 줄에 몰아넣지 않고 원어는 아랫줄에 둔다 */
 	.cost-calc .ja-term {
+		display: block;
 		font-size: var(--sl-text-xs);
 		font-weight: 400;
+		line-height: 1.5;
 	}
 	.cost-calc .ja-word {
 		color: var(--sl-color-gray-2);
+		white-space: normal;
 	}
 	.cost-calc input,
 	.cost-calc button {
@@ -456,10 +574,14 @@ const SEGMENTS = [
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
-		margin-bottom: 1rem;
+	}
+	.cost-presets span {
+		flex-basis: 100%;
 		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
 	}
 	.cost-presets button {
+		flex: 1 1 auto;
 		min-height: 2.75rem;
 		padding: 0 0.85rem;
 		border: 1px solid var(--sl-color-gray-4);
@@ -477,26 +599,102 @@ const SEGMENTS = [
 		color: var(--c-on-accent);
 	}
 
-	.cost-calc fieldset {
+	#cost-form {
+		counter-reset: cost-section;
+		display: grid;
+		gap: 1rem;
+	}
+	.cost-main {
 		display: grid;
 		gap: 1rem;
 		min-width: 0;
+	}
+	.cost-calc fieldset,
+	.cost-card,
+	.cost-presets,
+	.cost-steps,
+	.cost-summary {
+		min-width: 0;
 		margin: 0;
-		padding: 1.1rem 0;
-		border: 0;
-		border-top: 1px solid var(--sl-color-hairline);
+		padding: 1.25rem;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: var(--radius);
+		background: var(--sl-color-bg);
+		color: var(--sl-color-white);
+	}
+	.cost-calc fieldset {
+		display: grid;
+		gap: 1rem;
+		scroll-margin-top: calc(var(--sl-nav-height) + 6rem);
 	}
 	.cost-calc legend {
 		float: left;
 		width: 100%;
-		padding: 0;
+		padding: 0 0 0.75rem;
+		border-bottom: 1px solid var(--sl-color-hairline);
 		color: var(--sl-color-white);
+		font-size: var(--sl-text-lg);
 		font-weight: 700;
+		line-height: 1.4;
+	}
+	.cost-calc legend::before {
+		counter-increment: cost-section;
+		content: counter(cost-section);
+		display: inline-grid;
+		place-items: center;
+		width: 1.6rem;
+		height: 1.6rem;
+		margin-inline-end: 0.5rem;
+		border-radius: 4px;
+		background: var(--sl-color-accent);
+		color: var(--c-on-accent);
+		font-size: var(--sl-text-sm);
+		vertical-align: 0.1em;
+	}
+	.cost-hint {
+		margin: 0;
+	}
+	.cost-card-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid var(--sl-color-hairline);
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
+	}
+	.cost-card-head h2 {
+		margin: 0;
+		color: var(--sl-color-white);
+		font-size: var(--sl-text-lg);
+		font-weight: 700;
+	}
+	.cost-card-foot {
+		margin: 0.75rem 0 0;
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
+		text-align: end;
 	}
 	.cost-row {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 		gap: 1rem;
+	}
+	/* Safari의 날짜 입력칸은 칸 너비를 넘어 옆 칸과 겹칠 수 있어 위아래로 쌓는다 */
+	.cost-stack {
+		display: grid;
+		gap: 1rem;
+	}
+	.cost-calc input[type='date'] {
+		display: block;
+		min-width: 0;
+		max-width: 100%;
+		height: 2.75rem;
+		appearance: none;
+		-webkit-appearance: none;
+	}
+	.cost-calc input[type='date']::-webkit-date-and-time-value {
+		text-align: left;
 	}
 	.cost-field {
 		display: grid;
@@ -520,6 +718,7 @@ const SEGMENTS = [
 		border-radius: var(--radius);
 		background: var(--sl-color-bg);
 		color: var(--sl-color-white);
+		text-align: left;
 	}
 	.cost-money input {
 		padding-right: 2.25rem;
@@ -559,7 +758,7 @@ const SEGMENTS = [
 	}
 	.cost-seg span {
 		display: block;
-		padding: 0.6rem 0.2rem;
+		padding: 0.7rem 0.2rem;
 		text-align: center;
 		white-space: nowrap;
 	}
@@ -589,41 +788,117 @@ const SEGMENTS = [
 	}
 	.cost-extra {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 8.5rem;
+		grid-template-columns: minmax(0, 1fr) 7.5rem;
 		gap: 0.75rem;
 		align-items: center;
 	}
 
-	.cost-sheet {
-		padding: 1.25rem;
-		border: 1px solid var(--sl-color-hairline);
-		border-radius: var(--radius);
-		background: var(--sl-color-bg);
-		color: var(--sl-color-white);
-		scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
+	.cost-side {
+		display: grid;
+		gap: 0.75rem;
+		min-width: 0;
+		align-content: start;
 	}
-	.cost-sheet-head {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		padding-bottom: 0.5rem;
-		border-bottom: 2px solid var(--sl-color-white);
+	.cost-steps {
+		display: none;
+	}
+	.cost-steps p {
+		margin: 0 0 0.75rem;
 		color: var(--sl-color-gray-3);
-	}
-	.cost-sheet-head h2 {
-		margin: 0;
-		color: var(--sl-color-white);
-		font-size: var(--sl-text-lg);
+		font-size: var(--sl-text-xs);
 		font-weight: 700;
+	}
+	.cost-steps ol {
+		display: grid;
+		gap: 0.15rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.cost-steps a {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding-block: 0.3rem;
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+	}
+	.cost-step-n {
+		display: inline-grid;
+		flex: none;
+		place-items: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		border: 1px solid var(--sl-color-gray-4);
+		border-radius: 4px;
+		font-size: var(--sl-text-xs);
+	}
+	.cost-steps .is-current a {
+		color: var(--sl-color-white);
+		font-weight: 700;
+	}
+	.cost-steps .is-current .cost-step-n {
+		border-color: var(--sl-color-accent);
+		background: var(--sl-color-accent);
+		color: var(--c-on-accent);
+	}
+	.cost-steps .is-done .cost-step-n {
+		background: var(--sl-color-gray-6);
+		font-size: 0;
+	}
+	.cost-steps .is-done .cost-step-n::after {
+		content: '✓';
+		font-size: var(--sl-text-xs);
+	}
+	.cost-guide {
+		padding: 0.9rem 1rem;
+		border-radius: var(--radius);
+		background: var(--sl-color-accent-low);
+		color: var(--sl-color-white);
+		font-size: var(--sl-text-xs);
+	}
+	.cost-guide strong {
+		color: var(--sl-color-text-accent);
+	}
+	.cost-guide p {
+		margin: 0.2rem 0 0;
+		line-height: 1.55;
+	}
+	#cost-sheet {
+		scroll-margin-top: calc(var(--sl-nav-height) + 6rem);
 	}
 	.cost-total {
 		display: grid;
 		gap: 0.1rem;
-		padding-block: 1rem 0.75rem;
 		color: var(--sl-color-gray-3);
+		text-align: end;
+	}
+	.cost-total-label {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 0.5rem;
+		color: var(--sl-color-white);
+		font-weight: 700;
+		text-align: start;
+	}
+	.cost-total #cost-sub {
+		font-size: var(--sl-text-xs);
+	}
+	.cost-delta {
+		color: var(--sl-color-text-accent);
+		font-size: var(--sl-text-sm);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	.cost-delta.is-on {
+		opacity: 1;
 	}
 	.cost-total strong {
-		color: var(--sl-color-white);
+		color: var(--sl-color-text-accent);
 		font-size: var(--sl-text-3xl);
 		font-weight: 700;
 		line-height: 1.2;
@@ -633,6 +908,7 @@ const SEGMENTS = [
 	.cost-split {
 		display: flex;
 		height: 6px;
+		margin-top: 0.75rem;
 		overflow: hidden;
 		background: var(--sl-color-gray-5);
 	}
@@ -665,32 +941,73 @@ const SEGMENTS = [
 		color: var(--sl-color-white);
 		font-variant-numeric: tabular-nums;
 	}
+
+	/* 내역: 폰에서는 두 줄, 넓은 화면에서는 표처럼 한 줄 */
+	.cost-items-head {
+		display: none;
+	}
 	.cost-calc dl {
-		margin: 0.75rem 0 0;
+		margin: 0;
 	}
 	.cost-calc dl > div {
-		display: flex;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding-block: 0.45rem;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-areas: 'label amount' 'note tag';
+		gap: 0 0.75rem;
+		padding-block: 0.55rem;
 		border-bottom: 1px solid var(--sl-color-hairline);
 	}
 	.cost-calc dd {
 		margin: 0;
+	}
+	.cost-item-label {
+		grid-area: label;
+		font-weight: 500;
+	}
+	.cost-item-note {
+		grid-area: note;
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
+	}
+	.cost-item-amount {
+		grid-area: amount;
+		font-weight: 700;
+		text-align: end;
 		white-space: nowrap;
 		font-variant-numeric: tabular-nums;
 	}
-	.cost-calc .is-zero {
-		color: var(--sl-color-gray-3);
+	.cost-item-tag {
+		grid-area: tag;
+		text-align: end;
 	}
 	.cost-tag {
-		margin-inline-start: 0.4rem;
 		padding: 0 0.35em;
 		border-radius: var(--radius);
 		background: var(--c-soft);
 		color: var(--c);
 		font-size: var(--sl-text-xs);
 		font-weight: 600;
+	}
+	.cost-calc .is-zero,
+	.cost-calc .is-zero .cost-item-amount {
+		color: var(--sl-color-gray-3);
+		font-weight: 400;
+	}
+	.cost-calc dl > .is-changed {
+		animation: cost-changed 0.9s ease-out;
+	}
+	@keyframes cost-changed {
+		from {
+			background: var(--sl-color-accent-low);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cost-calc dl > .is-changed {
+			animation: none;
+		}
+		.cost-delta {
+			transition: none;
+		}
 	}
 
 	.cost-actions {
@@ -773,38 +1090,78 @@ const SEGMENTS = [
 		font-size: var(--sl-text-xs);
 	}
 
-	/* 좁은 화면: 합계가 계산기 끝까지 아래에 붙어 따라온다. sticky라 본문과 푸터는 가리지 않는다 */
+	/* 좁은 화면: 합계를 계산기 위쪽에 붙여 둔다. 아래쪽에 두면 입력할 때 키보드에 가려진다 */
 	.cost-bar {
 		position: sticky;
-		bottom: 0;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 0.75rem;
-		margin-top: 1rem;
-		padding: 0.6rem 0.85rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+		top: var(--sl-nav-height);
+		z-index: 2;
+		margin-bottom: 1rem;
+		padding: 0.5rem 0.75rem 0.6rem;
+		border: 1px solid var(--sl-color-hairline);
 		border-radius: var(--radius);
-		background: var(--sl-color-white);
-		color: var(--sl-color-black);
+		background: var(--sl-color-bg);
+		box-shadow: 0 6px 12px -8px rgb(0 0 0 / 0.35);
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
+	}
+	.cost-bar-line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 0.5rem;
+		margin-bottom: 0.4rem;
 	}
 	.cost-bar b {
+		color: var(--sl-color-white);
 		font-size: var(--sl-text-lg);
 		font-variant-numeric: tabular-nums;
 	}
+	.cost-bar .cost-delta {
+		font-size: var(--sl-text-xs);
+	}
 	.cost-bar a {
-		color: inherit;
+		margin-inline-start: auto;
+		color: var(--sl-color-text-accent);
+		white-space: nowrap;
 	}
 
 	@media (min-width: 72rem) {
-		.cost-grid {
-			grid-template-columns: minmax(0, 1fr) 20rem;
+		/* 이 페이지만 본문 폭을 넓혀 입력 영역과 오른쪽 패널을 나란히 둔다 */
+		:root:root {
+			--sl-content-width: 60rem;
 		}
-		.cost-sheet {
+		.cost-grid {
+			grid-template-columns: minmax(0, 1fr) 17rem;
+		}
+		.cost-side {
 			position: sticky;
 			top: calc(var(--sl-nav-height) + 1rem);
+			max-height: calc(100dvh - var(--sl-nav-height) - 2rem);
+			overflow-y: auto;
+			scrollbar-width: none;
+		}
+		.cost-steps {
+			display: block;
 		}
 		.cost-bar {
 			display: none;
+		}
+		.cost-items-head {
+			display: grid;
+			padding-block: 0.5rem;
+			border-bottom: 1px solid var(--sl-color-hairline);
+			color: var(--sl-color-gray-3);
+			font-size: var(--sl-text-xs);
+		}
+		.cost-items-head,
+		.cost-calc dl > div {
+			grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) 6rem 3rem;
+			grid-template-areas: 'label note amount tag';
+			gap: 0 0.75rem;
+			align-items: center;
+		}
+		.cost-items-head span:nth-child(n + 3) {
+			text-align: end;
 		}
 	}
 </style>

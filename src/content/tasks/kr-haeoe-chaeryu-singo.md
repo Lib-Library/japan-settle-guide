@@ -5,6 +5,7 @@ topic: korea
 order: 20
 where: 한국 읍·면·동 주민센터
 deadline: 출국 전
+due: { kind: estimate, days: 0 }
 bring:
   - 신분증
   - 체류 국가의 비자 사본 등 해외 체류를 확인할 수 있는 서류

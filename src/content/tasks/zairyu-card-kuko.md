@@ -6,6 +6,7 @@ topic: pre-arrival
 order: 60
 where: 일본 도착 공항의 입국 심사대
 deadline: 입국 심사 때 (지정 공항이 아니면 전입신고 후 나중에 발급)
+due: { kind: arrival, days: 0 }
 bring:
   - 취업 비자가 붙은 여권
   - COE (종이 또는 전자 메일)

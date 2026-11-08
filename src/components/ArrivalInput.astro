@@ -1,0 +1,35 @@
+---
+// 입국일 입력칸. 홈·할 일 페이지·내 일정에서 함께 쓴다. 한 곳에서 넣으면 모든 페이지에 반영된다.
+interface Props {
+	/** 한 페이지에 여러 개 둘 때 서로 달라야 한다 */
+	id: string;
+	/** 내 일정 페이지 안에서는 자기 자신으로 가는 링크를 숨긴다 */
+	showCta?: boolean;
+}
+const { id, showCta = true } = Astro.props;
+---
+
+<div class="arrival not-content" data-arrival>
+	<form class="arrival-form" data-arrival-form novalidate>
+		<label class="arrival-label" for={id}>내 입국일 (예정일도 괜찮아요)</label>
+		<div class="arrival-row">
+			<input class="arrival-input" type="date" id={id} name="arrival" />
+			<button type="submit" class="arrival-submit">마감일 보기</button>
+		</div>
+		<p class="arrival-error" data-arrival-error role="alert" hidden>입국일을 골라 주세요.</p>
+		<p class="arrival-hint">입력한 날짜는 이 브라우저에만 저장돼요.</p>
+		<button type="button" class="arrival-link" data-arrival-clear hidden>입국일 지우기</button>
+	</form>
+	<div class="arrival-set" data-arrival-set hidden>
+		<p class="arrival-summary" data-arrival-summary tabindex="-1"></p>
+		<div class="arrival-actions">
+			{showCta && <a class="arrival-cta" href="/my/">내 일정 보기 →</a>}
+			<button type="button" class="arrival-link" data-arrival-edit>바꾸기</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import { initArrival } from '../scripts/arrival';
+	initArrival();
+</script>
