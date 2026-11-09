@@ -1,6 +1,6 @@
 // 입국일을 localStorage에 저장/복원하고 입국일 입력칸([data-arrival])을 그린다.
 // 저장 형식: 'YYYY-MM-DD' 하나. 체크 진행 상황(jsg:progress:v1)과는 따로 둔다.
-import { arrivalSummary, formatKo, parseYmd, todayYmd } from '../lib/due.ts';
+import { arrivalSummary, formatKo, parseLooseYmd, parseYmd, todayYmd, toDots } from '../lib/due.ts';
 
 const STORAGE_KEY = 'jsg:arrival:v1';
 const EVENT = 'jsg:arrival';
@@ -46,7 +46,7 @@ function render() {
 		root.querySelector<HTMLElement>('[data-arrival-clear]')!.hidden = !arrival;
 		if (!arrival) return;
 		root.querySelector('[data-arrival-summary]')!.textContent = `입국일 ${formatKo(arrival, today)} · ${arrivalSummary(arrival, today)}`;
-		root.querySelector<HTMLInputElement>('input[type="date"]')!.value = arrival;
+		root.querySelector<HTMLInputElement>('[data-arrival-input]')!.value = toDots(arrival);
 	});
 }
 
@@ -54,7 +54,7 @@ function render() {
 export function editArrival(root: HTMLElement) {
 	root.dataset.editing = 'true';
 	render();
-	root.querySelector<HTMLInputElement>('input[type="date"]')!.focus();
+	root.querySelector<HTMLInputElement>('[data-arrival-input]')!.focus();
 }
 
 let initialized = false;
@@ -73,7 +73,7 @@ export function initArrival() {
 		const form = (e.target as HTMLElement).closest?.<HTMLFormElement>('[data-arrival-form]');
 		if (!form) return;
 		e.preventDefault();
-		const value = parseYmd(form.querySelector<HTMLInputElement>('input[type="date"]')!.value);
+		const value = parseLooseYmd(form.querySelector<HTMLInputElement>('[data-arrival-input]')!.value);
 		form.querySelector<HTMLElement>('[data-arrival-error]')!.hidden = Boolean(value);
 		if (!value) return;
 		const root = form.closest<HTMLElement>('[data-arrival]')!;
@@ -92,7 +92,7 @@ export function initArrival() {
 			const root = clear.closest<HTMLElement>('[data-arrival]')!;
 			root.dataset.editing = 'false';
 			setArrival(null);
-			const input = root.querySelector<HTMLInputElement>('input[type="date"]')!;
+			const input = root.querySelector<HTMLInputElement>('[data-arrival-input]')!;
 			input.value = '';
 			input.focus();
 		}

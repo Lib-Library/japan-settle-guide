@@ -55,6 +55,17 @@ export function parseYmd(value: unknown): string | null {
 	return fromUtc(Date.UTC(+m[1], +m[2] - 1, +m[3])) === value ? value : null;
 }
 
+/** 손으로 친 날짜를 읽는다: '2026.11.2', '2026-11-02', '20261102', '2026/11/2' → '2026-11-02'. 없는 날짜면 null */
+export function parseLooseYmd(value: string): string | null {
+	const m = /^\s*(\d{4})(?:[.\-/\s]+(\d{1,2})[.\-/\s]+(\d{1,2})|(\d{2})(\d{2}))\.?\s*$/.exec(value);
+	if (!m) return null;
+	const p = (n: string) => n.padStart(2, '0');
+	return parseYmd(`${m[1]}-${p(m[2] ?? m[4])}-${p(m[3] ?? m[5])}`);
+}
+
+/** 입력칸에 보여 줄 형식 '2026.11.02' */
+export const toDots = (ymd: string) => ymd.replaceAll('-', '.');
+
 /** 기기 시간대의 오늘 (UTC가 아니라 사용자가 보는 달력 기준) */
 export function todayYmd(now = new Date()): string {
 	const p = (n: number) => String(n).padStart(2, '0');
@@ -119,10 +130,22 @@ export function relLabel(left: number): string {
 	return left > 0 ? `${left}일 남음` : `${-left}일 지남`;
 }
 
+/** 'D-7' / 'D-day' / '3일 지남' */
+export const dLabel = (left: number) => (left > 0 ? `D-${left}` : left === 0 ? 'D-day' : `${-left}일 지남`);
+
 /** '입국까지 23일' / '오늘 입국' / '입국 후 9일째' (입국일이 1일째) */
 export function arrivalSummary(arrival: string, today: string): string {
 	const d = daysBetween(arrival, today);
 	if (d < 0) return `입국까지 ${-d}일`;
 	if (d === 0) return '오늘 입국';
 	return `입국 후 ${d + 1}일째`;
+}
+
+/** 입국일 기준 지금 시기: 권장 시기(PHASE_WINDOW_DAYS)를 아직 안 넘긴 첫 시기. 1년이 지나도 '첫 1년'에 둔다. */
+export function currentPhase(arrival: string, today: string): string {
+	const d = daysBetween(arrival, today);
+	for (const [phase, days] of Object.entries(PHASE_WINDOW_DAYS)) {
+		if (days != null && d < days) return phase;
+	}
+	return 'first-1y';
 }

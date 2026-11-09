@@ -51,6 +51,7 @@ function render() {
 		if (doneEl) doneEl.textContent = String(done);
 		el.querySelector('[role="progressbar"]')?.setAttribute('aria-valuenow', String(done));
 		el.querySelector<HTMLElement>('.progress-fill')?.style.setProperty('width', `${pct}%`);
+		el.style.setProperty('--pct', `${pct}%`); // 원형 진행 표시(.task-ring)용
 		el.classList.toggle('is-complete', ids.length > 0 && done === ids.length);
 	});
 

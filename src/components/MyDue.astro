@@ -29,19 +29,26 @@ const datable = due ? due.kind !== 'none' : PHASE_WINDOW_DAYS[phase] != null;
 				내 마감일
 			</h2>
 			<div data-my-due-result hidden>
-				<p class="my-due-date">
-					<strong data-my-due-text tabindex="-1" />
-					<span class="due-badge" data-my-due-badge hidden />
-				</p>
-				<p class="my-due-basis" data-my-due-basis />
-				<label class="my-due-done">
-					<input class="task-check" type="checkbox" data-task-id={task.id} />
-					완료로 표시
-				</label>
-				<div class="arrival-actions">
+				<div class="my-due-main">
+					<span class="my-due-d" data-my-due-d />
+					<div>
+						<p class="my-due-date">
+							<strong data-my-due-text tabindex="-1" />
+							<span class="due-badge" data-my-due-badge hidden />
+						</p>
+						<p class="my-due-basis" data-my-due-basis />
+					</div>
+				</div>
+				<div class="my-due-buttons">
 					<button type="button" class="arrival-submit" data-ics-one>
 						캘린더에 넣기
 					</button>
+					<label class="my-due-done">
+						<input class="task-check" type="checkbox" data-task-id={task.id} />
+						완료로 표시
+					</label>
+				</div>
+				<div class="arrival-actions">
 					<button type="button" class="arrival-link" data-my-due-edit>
 						입국일 바꾸기
 					</button>
@@ -58,10 +65,10 @@ const datable = due ? due.kind !== 'none' : PHASE_WINDOW_DAYS[phase] != null;
 }
 
 <script>
-	import { planItem, todayYmd, type Due, type PlanItem } from '../lib/due';
+	import { daysBetween, dLabel, formatKo, planItem, todayYmd, type Due, type PlanItem } from '../lib/due';
 	import { taskEvent } from '../lib/ics';
 	import { editArrival, getArrival, onArrivalChange } from '../scripts/arrival';
-	import { BADGE, downloadIcs, dueText } from '../scripts/calendar';
+	import { BADGE, downloadIcs } from '../scripts/calendar';
 
 	const box = document.querySelector<HTMLElement>('[data-my-due]');
 	let current: PlanItem | null = null;
@@ -81,7 +88,8 @@ const datable = due ? due.kind !== 'none' : PHASE_WINDOW_DAYS[phase] != null;
 		const { id, phase, due, deadline } = box.dataset;
 		current = planItem({ id: id!, phase: phase!, due: due ? (JSON.parse(due) as Due) : undefined }, arrival);
 		const today = todayYmd();
-		box.querySelector('[data-my-due-text]')!.textContent = dueText(current, today);
+		box.querySelector('[data-my-due-d]')!.textContent = dLabel(daysBetween(today, current.date!));
+		box.querySelector('[data-my-due-text]')!.textContent = `${formatKo(current.date!, today)}까지`;
 		const badge = box.querySelector<HTMLElement>('[data-my-due-badge]')!;
 		badge.hidden = !BADGE[current.kind];
 		badge.textContent = BADGE[current.kind] ?? '';

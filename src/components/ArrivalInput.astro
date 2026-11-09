@@ -13,11 +13,36 @@ const { id, showCta = true } = Astro.props;
 	<form class="arrival-form" data-arrival-form novalidate>
 		<label class="arrival-label" for={id}>내 입국일 (예정일도 괜찮아요)</label>
 		<div class="arrival-row">
-			<input class="arrival-input" type="date" id={id} name="arrival" />
+			<div class="datepicker" data-datepicker>
+				<input
+					class="arrival-input"
+					type="text"
+					inputmode="numeric"
+					autocomplete="off"
+					placeholder="YYYY.MM.DD"
+					id={id}
+					name="arrival"
+					data-arrival-input
+					aria-describedby={`${id}-hint`}
+				/>
+				<button
+					type="button"
+					class="datepicker-open"
+					data-datepicker-open
+					aria-label="달력에서 고르기"
+					aria-expanded="false"
+					aria-controls={`${id}-calendar`}
+				>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+						<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path>
+					</svg>
+				</button>
+				<div class="datepicker-pop" id={`${id}-calendar`} role="dialog" aria-label="입국일 고르기" data-datepicker-pop hidden></div>
+			</div>
 			<button type="submit" class="arrival-submit">마감일 보기</button>
 		</div>
-		<p class="arrival-error" data-arrival-error role="alert" hidden>입국일을 골라 주세요.</p>
-		<p class="arrival-hint">입력한 날짜는 이 브라우저에만 저장돼요.</p>
+		<p class="arrival-error" data-arrival-error role="alert" hidden>입국일을 2026.12.01처럼 넣거나 달력에서 골라 주세요.</p>
+		<p class="arrival-hint" id={`${id}-hint`}>예: 2026.12.01 · 입력한 날짜는 이 브라우저에만 저장돼요.</p>
 		<button type="button" class="arrival-link" data-arrival-clear hidden>입국일 지우기</button>
 	</form>
 	<div class="arrival-set" data-arrival-set hidden>
@@ -31,5 +56,7 @@ const { id, showCta = true } = Astro.props;
 
 <script>
 	import { initArrival } from '../scripts/arrival';
+	import { initDatepicker } from '../scripts/datepicker';
 	initArrival();
+	initDatepicker();
 </script>

@@ -4,10 +4,12 @@ import {
 	addDays,
 	addMonths,
 	arrivalSummary,
+	currentPhase,
 	daysBetween,
 	dueDate,
 	formatKo,
 	groupSchedule,
+	parseLooseYmd,
 	parseYmd,
 	planItem,
 	relLabel,
@@ -124,5 +126,21 @@ assert.deepEqual(parseProgress('[1,2]'), {});
 assert.deepEqual(parseProgress('"x"'), {});
 assert.deepEqual(parseProgress('{"tennyu-todoke":true}'), { 'tennyu-todoke': true });
 assert.deepEqual(parseProgress(null), {});
+
+// 손으로 친 날짜
+assert.equal(parseLooseYmd('2026.11.2'), '2026-11-02');
+assert.equal(parseLooseYmd('2026-11-02'), '2026-11-02');
+assert.equal(parseLooseYmd('20261102'), '2026-11-02');
+assert.equal(parseLooseYmd(' 2026/1/5. '), '2026-01-05');
+assert.equal(parseLooseYmd('2026.2.30'), null);
+assert.equal(parseLooseYmd('2026.11'), null);
+assert.equal(parseLooseYmd(''), null);
+
+// 지금 시기: 입국 전날은 입국 전, 입국일·13일 뒤는 2주 이내, 14일 뒤는 첫 3개월, 1년 넘으면 첫 1년
+assert.equal(currentPhase('2026-12-01', '2026-11-30'), 'pre-arrival');
+assert.equal(currentPhase('2026-12-01', '2026-12-01'), 'arrival-2w');
+assert.equal(currentPhase('2026-12-01', '2026-12-14'), 'arrival-2w');
+assert.equal(currentPhase('2026-12-01', '2026-12-15'), 'first-3m');
+assert.equal(currentPhase('2026-12-01', '2028-01-01'), 'first-1y');
 
 console.log('입국일 일정 계산 검사 통과');

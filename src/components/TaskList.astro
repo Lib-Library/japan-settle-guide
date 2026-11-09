@@ -1,10 +1,11 @@
 ---
 // 시기(phase) 또는 주제(topic)로 할 일을 모아 체크리스트로 보여 준다.
 // 사용법: <TaskList phase="arrival-2w" />  또는  <TaskList topic="registration" />
+// 시기로 모으면 PHASE_STEPS의 단계별로 묶고, 진행 원형 요약을 맨 위에 둔다.
 import { getCollection } from 'astro:content';
 import TaskCard from './TaskCard.astro';
 import ProgressBar from './ProgressBar.astro';
-import type { PhaseId, TopicId } from '../lib/taxonomy';
+import { PHASE_STEPS, stepOf, type PhaseId, type TopicId } from '../lib/taxonomy';
 
 interface Props {
 	phase?: PhaseId;
@@ -16,17 +17,64 @@ const { phase, topic, progressLabel = '진행 상황' } = Astro.props;
 const tasks = (
 	await getCollection('tasks', ({ data }) => (!phase || data.phase === phase) && (!topic || data.topic === topic))
 ).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'ko'));
+
+// 단계마다 order 범위에 드는 할 일. 빈 단계는 뺀다.
+const steps = phase
+	? PHASE_STEPS[phase].map((s) => ({ label: s.label, tasks: tasks.filter((t) => stepOf(phase, t.data.order) === s) }))
+	: [];
+const ids = tasks.map((t) => t.id);
 ---
 
 {
 	tasks.length === 0 ? (
 		<p class="task-empty">이 부분의 체크리스트는 아직 준비 중입니다.</p>
+	) : phase ? (
+		<div class="task-list not-content">
+			<div class="task-summary" data-progress={ids.join(',')}>
+				<div
+					class="task-ring"
+					role="progressbar"
+					aria-label={progressLabel}
+					aria-valuemin="0"
+					aria-valuemax={ids.length}
+					aria-valuenow="0"
+				>
+					<span>
+						<span data-progress-done>0</span>/{ids.length}
+					</span>
+				</div>
+				<div class="task-summary-text">
+					<p class="task-summary-title">{progressLabel}</p>
+					<p class="task-summary-arrival" data-arrival-days hidden />
+					<p class="task-hint">항목을 누르면 자세한 내용이 열립니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
+				</div>
+			</div>
+			<ol class="task-steps">
+				{steps
+					.filter((s) => s.tasks.length > 0)
+					.map((s, i) => (
+						<li class="task-step" data-progress={s.tasks.map((t) => t.id).join(',')}>
+							<h3 class="task-step-title">
+								<span class="task-step-num" aria-hidden="true">
+									{i + 1}
+								</span>
+								{s.label}
+								<span class="task-step-now">지금 할 일</span>
+								<span class="task-step-done">완료</span>
+							</h3>
+							{s.tasks.map((task) => (
+								<TaskCard task={task} />
+							))}
+						</li>
+					))}
+			</ol>
+		</div>
 	) : (
 		<div class="task-list not-content">
-			<ProgressBar ids={tasks.map((t) => t.id)} label={progressLabel} />
+			<ProgressBar ids={ids} label={progressLabel} />
 			<p class="task-hint">항목을 누르면 자세한 내용이 열립니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
 			{tasks.map((task) => (
-				<TaskCard task={task} showPhase={!phase} />
+				<TaskCard task={task} showPhase />
 			))}
 		</div>
 	)
@@ -34,5 +82,7 @@ const tasks = (
 
 <script>
 	import { initChecklist } from '../scripts/checklist';
+	import { initDueChips } from '../scripts/due-chips';
 	initChecklist();
+	initDueChips();
 </script>

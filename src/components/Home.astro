@@ -1,0 +1,117 @@
+---
+// 홈: 오늘 카드(가장 급한 마감) · 이번 주 할 일 · 세로 시기 흐름 · 도구.
+// 입국일·체크에 따라 달라지는 부분은 브라우저에서 채운다 (src/scripts/home.ts).
+import { getCollection } from 'astro:content';
+import ArrivalInput from './ArrivalInput.astro';
+import ProgressBar from './ProgressBar.astro';
+import TopicIcon from './TopicIcon.astro';
+import { PHASES } from '../lib/taxonomy';
+
+const tasks = (await getCollection('tasks')).sort((a, b) => a.data.order - b.data.order);
+const json = JSON.stringify(
+	tasks.map((t) => ({ id: t.id, title: t.data.title, phase: t.data.phase, deadline: t.data.deadline, due: t.data.due })),
+).replace(/</g, '\\u003c');
+const idsOf = (phase: string) => tasks.filter((t) => t.data.phase === phase).map((t) => t.id);
+---
+
+<div class="home not-content">
+	<section class="home-card home-today" data-home-today aria-label="오늘">
+		<ArrivalInput id="arrival-home" showCta={false} />
+		<div class="home-urgent" data-home-urgent hidden>
+			<p class="home-urgent-label">가장 급한 마감</p>
+			<p class="home-urgent-main">
+				<span class="home-urgent-d" data-urgent-d></span>
+				<a class="home-urgent-title" data-urgent-link href="/my/"></a>
+			</p>
+			<p class="home-urgent-when">
+				<span data-urgent-date></span>
+				<span class="due-badge" data-urgent-badge hidden></span>
+				<span data-urgent-basis></span>
+			</p>
+		</div>
+		{
+			PHASES.map(
+				(p) =>
+					idsOf(p.id).length > 0 && (
+						<div class="home-today-progress" data-today-phase={p.id} hidden>
+							<ProgressBar ids={idsOf(p.id)} label={`${p.label} 할 일`} />
+						</div>
+					),
+			)
+		}
+	</section>
+
+	<section class="home-card" data-home-week data-pagefind-ignore aria-labelledby="home-week-title" hidden>
+		<h2 id="home-week-title" class="home-card-title" data-week-title>이번 주 할 일</h2>
+		<ul class="home-week-list">
+			{
+				tasks.map((t) => (
+					<li class="home-week-item" data-home-task={t.id} hidden>
+						<TopicIcon topic={t.data.topic} />
+						<div class="home-week-body">
+							<a class="home-week-title" href={`/tasks/${t.id}/`}>
+								{t.data.title}
+							</a>
+							<span class="home-week-where">{t.data.where}</span>
+						</div>
+						<span class="home-chip" data-chip />
+					</li>
+				))
+			}
+		</ul>
+		<a class="home-more" href="/my/">내 일정 전체 보기 →</a>
+	</section>
+
+	<section class="home-card" aria-labelledby="home-flow-title">
+		<h2 id="home-flow-title" class="home-card-title">시기별 체크리스트</h2>
+		<ol class="home-flow">
+			{
+				PHASES.map((p) => {
+					const ids = idsOf(p.id);
+					return (
+						<li class="home-phase" data-home-phase={p.id}>
+							<span class="home-phase-dot" aria-hidden="true" />
+							<a class="home-phase-link" href={p.href}>
+								<span class="home-phase-head">
+									<span class="home-phase-label">{p.label}</span>
+									<span class="home-here" hidden>
+										지금 여기
+									</span>
+								</span>
+								{ids.length > 0 ? <ProgressBar ids={ids} label="완료" /> : <span class="phase-soon">준비 중</span>}
+								<span class="home-phase-when" data-phase-when />
+							</a>
+						</li>
+					);
+				})
+			}
+		</ol>
+		<div class="home-flow-foot">
+			<button type="button" class="reset-btn" data-progress-reset>진행 상황 초기화</button>
+			<p class="task-hint">체크한 내용은 서버로 전송되지 않고 지금 쓰는 브라우저에만 저장됩니다.</p>
+		</div>
+	</section>
+
+	<section aria-labelledby="home-tools-title">
+		<h2 id="home-tools-title" class="home-card-title">도구</h2>
+		<div class="home-tools">
+			<a class="home-card home-tool" href="/topics/initial-cost-calculator/">
+				<span class="topic-icon topic-icon-md" aria-hidden="true">💴</span>
+				집 초기비용 계산기
+			</a>
+			<a class="home-card home-tool" href="/glossary/">
+				<span class="topic-icon topic-icon-md" aria-hidden="true">📖</span>
+				일본어 용어집
+			</a>
+		</div>
+	</section>
+</div>
+
+<script type="application/json" id="jsg-home-data" set:html={json} />
+
+<script>
+	import { initChecklist } from '../scripts/checklist';
+	import { initHome } from '../scripts/home';
+	initChecklist();
+	initHome();
+</script>
