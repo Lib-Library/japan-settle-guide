@@ -217,9 +217,6 @@ site-search button {
 	border-top: 1px solid var(--sl-color-hairline);
 	font-size: var(--sl-text-sm);
 }
-.task-card .sources {
-	margin-top: 1rem;
-}
 .sources-heading {
 	margin: 0 0 0.3rem;
 	font-weight: 700;
@@ -280,16 +277,6 @@ site-search button {
 .task-list .task-hint {
 	margin-bottom: 0.5rem;
 }
-.task-card {
-	display: grid;
-	grid-template-columns: 3rem 1fr;
-	align-items: start;
-	margin: 0;
-	border-top: 1px solid var(--sl-color-hairline);
-}
-.task-card:last-of-type {
-	border-bottom: 1px solid var(--sl-color-hairline);
-}
 .task-check-wrap {
 	/* 터치 영역 44px 이상 */
 	display: flex;
@@ -330,52 +317,6 @@ site-search button {
 	outline: 2px solid var(--sl-color-accent);
 	outline-offset: 3px;
 }
-.task-details {
-	min-width: 0;
-}
-.task-details summary {
-	display: grid;
-	grid-template-columns: auto 1fr auto;
-	gap: 0.15rem 0.75rem;
-	min-height: 3rem;
-	padding: 0.85rem 0.25rem 0.85rem 0;
-	cursor: pointer;
-	list-style: none;
-}
-.task-details summary::-webkit-details-marker {
-	display: none;
-}
-.task-details summary > * {
-	grid-column: 2;
-}
-/* 주제 아이콘은 왼쪽 열, 제목 줄에 맞춘다 */
-.task-details summary > .topic-icon {
-	grid-column: 1;
-	grid-row: 1;
-	font-size: var(--sl-text-lg); /* .task-title과 같은 크기·줄 높이 */
-	line-height: 1.4;
-}
-.task-details summary::after {
-	content: '+';
-	grid-column: 3;
-	grid-row: 1;
-	font: 400 1.5rem/1.2 var(--sl-font);
-	color: var(--sl-color-gray-3);
-}
-.task-details[open] summary::after {
-	content: '–';
-}
-.task-details summary:hover .task-title {
-	text-decoration: underline;
-	text-decoration-thickness: 1px;
-	text-underline-offset: 0.2em;
-}
-.task-title {
-	font-weight: 700;
-	font-size: var(--sl-text-lg);
-	color: var(--sl-color-white);
-	line-height: 1.4;
-}
 .task-tag {
 	margin-inline-start: 0.5rem;
 	padding: 0 0.4em;
@@ -386,48 +327,12 @@ site-search button {
 	color: var(--sl-color-gray-3);
 	vertical-align: 0.15em;
 }
-.task-deadline {
-	font-size: var(--sl-text-sm);
-	color: var(--sl-color-text-accent);
-}
 .task-phase {
 	color: var(--sl-color-gray-3);
 }
-.task-card.is-done .task-title {
-	color: var(--sl-color-gray-3);
-	text-decoration: line-through;
-	text-decoration-thickness: 1px;
-}
-.task-facts {
-	display: grid;
-	grid-template-columns: 4.5rem 1fr;
-	gap: 0.6rem 0.75rem;
-	margin: 0 0 0.5rem;
-	padding: 0.9rem 0.25rem 0.9rem 0;
-	border-top: 1px dotted var(--sl-color-gray-4);
-	font-size: var(--sl-text-sm);
-}
-.task-facts dt {
-	font-weight: 700;
-	color: var(--sl-color-gray-3);
-}
-.task-facts dd {
-	margin: 0;
-}
-.task-facts ul {
-	margin: 0;
-	padding-inline-start: 1.1rem;
-}
-.task-body,
-.task-card .sources,
-.task-card .expert-note {
-	margin-inline: 0 0.5rem;
-}
 .task-body {
+	margin-inline: 0 0.5rem;
 	font-size: var(--sl-text-sm);
-}
-.task-card .sources {
-	padding-bottom: 1.25rem;
 }
 
 .reset-btn {
@@ -543,12 +448,6 @@ site-search button {
 }
 
 /* 할 일 개별 페이지 */
-.task-permalink {
-	display: inline-flex;
-	align-items: center;
-	min-height: 44px;
-	font-weight: 700;
-}
 .my-due {
 	margin-block: 1rem 1.5rem;
 	padding: 1rem;
