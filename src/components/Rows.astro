@@ -10,5 +10,5 @@ const { title, tone } = Astro.props;
 
 <section class="rows not-content" data-tone={tone}>
 	{title && <p class="rows-title">{title}</p>}
-	<ul class="rows-list"><slot /></ul>
+	<ul class="rows-list" aria-label={title}><slot /></ul>
 </section>

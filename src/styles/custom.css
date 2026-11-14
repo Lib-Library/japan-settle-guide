@@ -1581,7 +1581,7 @@ site-search button {
 }
 .row-v {
 	flex-shrink: 0;
-	max-width: 40%;
+	white-space: nowrap; /* 전화번호·금액이 하이픈·물결에서 쪼개지지 않게 */
 	font-weight: 800;
 	color: var(--sl-color-text-accent);
 	text-align: end;
@@ -1617,6 +1617,7 @@ site-search button {
 .sl-steps > li::after {
 	background: var(--sl-color-hairline);
 }
-.sl-steps > li > :first-child {
+/* 느슨한 목록(단계 사이 빈 줄)의 첫 문단 = 단계 제목 */
+.sl-steps > li > p:first-child {
 	font-weight: 700;
 }
