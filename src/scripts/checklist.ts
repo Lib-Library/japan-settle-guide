@@ -40,7 +40,10 @@ function render() {
 	document.querySelectorAll<HTMLInputElement>('input[data-task-id]').forEach((input) => {
 		const done = Boolean(progress[input.dataset.taskId!]);
 		input.checked = done;
-		input.closest('[data-task-card]')?.classList.toggle('is-done', done);
+	});
+	// 체크박스가 없는 읽기 전용 줄(주제 페이지)도 같은 저장소로 완료 표시를 한다.
+	document.querySelectorAll<HTMLElement>('[data-task-card]').forEach((el) => {
+		el.classList.toggle('is-done', Boolean(progress[el.dataset.taskCard!]));
 	});
 
 	document.querySelectorAll<HTMLElement>('[data-progress]').forEach((el) => {

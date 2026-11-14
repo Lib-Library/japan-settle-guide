@@ -16,7 +16,7 @@
 - `src/content/tasks/*.md` — 체크리스트 항목(37개). 스키마는 `src/content.config.ts`
 - `src/content/docs/` — 홈, `timeline/`(시기 5개), `topics/`(주제 9개), `glossary.mdx`, `about.md`. 모든 페이지에 `lastVerified` 필수
 - `src/lib/taxonomy.ts` — PHASES/TOPICS 단일 출처. 새 시기·주제는 여기에 추가 (`work`, `family` 주제는 정의만 있고 항목 없음)
-- `src/components/` — TaskRow(체크리스트 한 줄, 내 일정과 같은 마크업)/TaskList/ProgressBar/Sources/Ja/ExpertNote/VerifyText, `overrides/`는 Starlight 컴포넌트 교체
+- `src/components/` — TaskRow(체크리스트 한 줄, 내 일정과 같은 마크업. 주제 페이지는 `readonly` 링크 목록)/TaskList/Rows·Row·Stat·TopicTasks(주제 페이지 구성 요소, CONTRIBUTING.md 참고)/ProgressBar/Sources/Ja/ExpertNote/VerifyText, `overrides/`는 Starlight 컴포넌트 교체
 - `src/plugins/remark-verify.mjs` — 본문 `[확인 필요]` → 노란 배지 (`astro.config.mjs`에서 unified 처리기로 등록)
 - `src/scripts/checklist.ts` — 진행 상황을 localStorage(`jsg:progress:v1`)에 저장. 서버·계정 없음
 - 사이드바는 `astro.config.mjs`에 수동 정의(topics만 autogenerate)

@@ -1,17 +1,25 @@
 ---
-// 홈: 오늘 카드(가장 급한 마감) · 이번 주 할 일 · 세로 시기 흐름 · 도구.
+// 홈: 오늘 카드(가장 급한 마감) · 이번 주 할 일 · 세로 시기 흐름 · 주제별 가이드 · 도구.
 // 입국일·체크에 따라 달라지는 부분은 브라우저에서 채운다 (src/scripts/home.ts).
 import { getCollection } from 'astro:content';
 import ArrivalInput from './ArrivalInput.astro';
 import ProgressBar from './ProgressBar.astro';
 import TopicIcon from './TopicIcon.astro';
-import { PHASES } from '../lib/taxonomy';
+import { PHASES, topicOf, type TopicId } from '../lib/taxonomy';
 
 const tasks = (await getCollection('tasks')).sort((a, b) => a.data.order - b.data.order);
 const json = JSON.stringify(
 	tasks.map((t) => ({ id: t.id, title: t.data.title, phase: t.data.phase, deadline: t.data.deadline, due: t.data.due })),
 ).replace(/</g, '\\u003c');
 const idsOf = (phase: string) => tasks.filter((t) => t.data.phase === phase).map((t) => t.id);
+
+// 주제별 가이드 카드: topics/ 아래 페이지(계산기 제외)를 사이드바 순서대로
+const topics = (await getCollection('docs', ({ id }) => id.startsWith('topics/') && id !== 'topics/initial-cost-calculator'))
+	.sort((a, b) => (a.data.sidebar.order ?? 99) - (b.data.sidebar.order ?? 99))
+	.map((d) => {
+		const id = d.id.slice('topics/'.length) as TopicId;
+		return { id, label: topicOf(id)?.label ?? d.data.title, count: tasks.filter((t) => t.data.topic === id).length };
+	});
 ---
 
 <div class="home not-content">
@@ -89,6 +97,21 @@ const idsOf = (phase: string) => tasks.filter((t) => t.data.phase === phase).map
 		<div class="home-flow-foot">
 			<button type="button" class="reset-btn" data-progress-reset>진행 상황 초기화</button>
 			<p class="task-hint">체크한 내용은 서버로 전송되지 않고 지금 쓰는 브라우저에만 저장됩니다.</p>
+		</div>
+	</section>
+
+	<section aria-labelledby="home-topics-title">
+		<h2 id="home-topics-title" class="home-card-title">주제별 가이드</h2>
+		<div class="home-tools">
+			{
+				topics.map((t) => (
+					<a class="home-card home-tool home-topic" href={`/topics/${t.id}/`}>
+						<TopicIcon topic={t.id} />
+						<span>{t.label}</span>
+						{t.count > 0 && <span class="home-topic-count">할 일 {t.count}개</span>}
+					</a>
+				))
+			}
 		</div>
 	</section>
 

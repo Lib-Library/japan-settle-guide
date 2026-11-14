@@ -1621,3 +1621,30 @@ site-search button {
 .sl-steps > li > p:first-child {
 	font-weight: 700;
 }
+
+/* 주제 페이지의 읽기 전용 할 일 줄: 완료한 일에만 '완료' 표시 */
+.task-row-done {
+	display: none;
+	flex-shrink: 0;
+	padding: 0 0.5rem;
+	border-radius: 999px;
+	background: var(--c-ok-bg);
+	font-size: var(--sl-text-xs);
+	font-weight: 700;
+	color: var(--c-ok-fg);
+}
+.task-row.is-done .task-row-done {
+	display: inline-block;
+}
+
+/* 홈 주제별 가이드 카드 (도구 카드와 같은 2열, 높이만 낮게) */
+.home-topic {
+	gap: 0.375rem;
+	min-height: 0;
+}
+.home-topic-count {
+	margin-top: auto;
+	font-size: var(--sl-text-sm);
+	font-weight: 500;
+	color: var(--sl-color-gray-3);
+}
