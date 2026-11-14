@@ -1,4 +1,4 @@
-// 콘텐츠 점검 리포트: [확인 필요] 위치, 오래된 확인일, 출처 없는 주제 페이지를 출력한다.
+// 콘텐츠 점검 리포트: [확인 필요] 위치, 오래된 확인일, 출처 없는 주제 페이지, 깨지는 굵게 표시를 출력한다.
 // 사용법: npm run check
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('../src/content/', import.meta.url));
 const MARK = '[확인 필요]';
 const STALE_DAYS = 183; // src/lib/taxonomy.ts의 STALE_AFTER_DAYS와 같게 유지
+const PUNCT = /[\p{P}\p{S}]/u;
+const WORD = /[\p{L}\p{N}]/u;
 
 async function* walk(dir) {
 	for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -19,6 +21,7 @@ async function* walk(dir) {
 const verify = [];
 const stale = [];
 const noSources = [];
+const brokenBold = [];
 const now = Date.now();
 
 for await (const file of walk(ROOT)) {
@@ -27,6 +30,13 @@ for await (const file of walk(ROOT)) {
 
 	text.split('\n').forEach((line, i) => {
 		if (line.includes(MARK)) verify.push(`${rel}:${i + 1}  ${line.trim()}`);
+		// **「용어」**를 처럼 문장부호로 끝난 굵게 바로 뒤에 글자가 붙으면 마크다운이 굵게로 읽지 못해 ** 가 그대로 보인다.
+		for (const m of line.matchAll(/\*\*([^*]+?)\*\*/g)) {
+			const after = line[m.index + m[0].length] ?? ' ';
+			const before = line[m.index - 1] ?? ' ';
+			if ((PUNCT.test(m[1].at(-1)) && WORD.test(after)) || (PUNCT.test(m[1][0]) && WORD.test(before)))
+				brokenBold.push(`${rel}:${i + 1}  ${m[0]}${after}`);
+		}
 	});
 
 	const fm = text.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
@@ -47,4 +57,5 @@ console.log('콘텐츠 점검 리포트');
 section('[확인 필요] 표시', verify);
 section(`확인일이 ${STALE_DAYS}일 넘게 지난 파일`, stale);
 section('출처(sources)가 없는 주제 페이지', noSources);
+section('굵게가 깨지는 곳 (<strong>…</strong>으로 바꾸세요)', brokenBold);
 console.log('\n※ 할 일(tasks) 파일의 출처 누락·형식 오류는 npm run build 단계에서 오류로 잡힙니다.');

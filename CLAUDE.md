@@ -8,7 +8,7 @@
 
 - `npm run dev` — 미리보기 (AGENTS.md 지침대로 백그라운드: `astro dev --background`)
 - `npm run build` — 정적 빌드(`dist/`). tasks 프론트매터 스키마 위반(출처 0개, 잘못된 phase/topic 등)은 여기서 실패
-- `npm run check` — `scripts/check-content.mjs`: `[확인 필요]` 위치, 183일 넘은 `lastVerified`, 출처 없는 topics 페이지 리포트
+- `npm run check` — `scripts/check-content.mjs`: `[확인 필요]` 위치, 183일 넘은 `lastVerified`, 출처 없는 topics 페이지, 깨지는 굵게(`**「용어」**를`) 리포트
 - 테스트 러너·린터 없음. 검증은 `build` + `check`.
 
 ## 구조
