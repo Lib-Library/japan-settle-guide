@@ -1477,3 +1477,146 @@ site-search button {
 	align-items: center;
 	min-height: 44px;
 }
+
+/* 주제 페이지: 할 일 요약 · 요약 숫자 · 묶음 행 · 콜아웃 · 단계 */
+.topic-tasks {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.75rem;
+	min-height: 3rem;
+	margin-block: 1rem;
+	padding: 0.75rem 1rem;
+	border: 2px solid var(--sl-color-accent);
+	border-radius: var(--radius-xl);
+	font-weight: 700;
+	color: var(--sl-color-white);
+	text-decoration: none;
+}
+.topic-tasks-done {
+	flex-shrink: 0;
+	color: var(--sl-color-text-accent);
+}
+.topic-tasks:hover {
+	background: var(--sl-color-accent-low);
+}
+
+.stat {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.25rem 0.5rem;
+	margin-block: 1rem 0.75rem;
+	padding: 0.75rem 1rem;
+	border-radius: var(--radius-xl);
+	background: var(--sl-color-accent-low);
+}
+.stat-v {
+	font-size: var(--sl-text-2xl);
+	font-weight: 800;
+	color: var(--sl-color-text-accent);
+}
+.stat-d {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-2);
+}
+
+.rows {
+	margin-block: 0.75rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+}
+.rows-title {
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+	background: var(--sl-color-gray-6);
+	font-size: var(--sl-text-sm);
+	font-weight: 700;
+	color: var(--sl-color-white);
+}
+.rows[data-tone='back'] .rows-title {
+	background: var(--c-ok-bg);
+	color: var(--c-ok-fg);
+}
+.rows[data-tone='lost'] .rows-title {
+	background: var(--c-danger-bg);
+	color: var(--c-danger-fg);
+}
+.rows[data-tone='info'] .rows-title {
+	background: var(--sl-color-accent-low);
+	color: var(--sl-color-text-accent);
+}
+.rows-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.row {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0.625rem 0.75rem;
+	border-top: 1px solid var(--sl-color-hairline);
+}
+.row:first-child {
+	border-top: 0;
+}
+.row-main {
+	min-width: 0;
+}
+.row-t {
+	font-weight: 700;
+	color: var(--sl-color-white);
+}
+.row-d {
+	margin-top: 0.125rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-2);
+}
+.row-d > :is(p, ul) {
+	margin: 0;
+}
+.row-v {
+	flex-shrink: 0;
+	max-width: 40%;
+	font-weight: 800;
+	color: var(--sl-color-text-accent);
+	text-align: end;
+}
+.row-tag {
+	flex-shrink: 0;
+	padding: 0 0.5rem;
+	border-radius: 999px;
+	background: var(--sl-color-gray-6);
+	font-size: var(--sl-text-xs);
+	font-weight: 700;
+	color: var(--sl-color-gray-2);
+}
+
+/* 콜아웃: 왼쪽 굵은 선 + 옅은 배경. tip은 Starlight 기본 보라 대신 포인트 색 */
+.sl-markdown-content .starlight-aside {
+	border: 0;
+	border-inline-start: 4px solid var(--sl-color-asides-border);
+	border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+}
+.starlight-aside--tip {
+	--sl-color-asides-text-accent: var(--sl-color-text-accent);
+	--sl-color-asides-border: var(--sl-color-accent);
+	background-color: var(--sl-color-accent-low);
+}
+
+/* 단계: 포인트 색 번호 원 + 가는 연결선 */
+.sl-steps > li::before {
+	background: var(--sl-color-accent);
+	color: var(--c-on-accent);
+	box-shadow: none;
+}
+.sl-steps > li::after {
+	background: var(--sl-color-hairline);
+}
+.sl-steps > li > :first-child {
+	font-weight: 700;
+}

@@ -1,0 +1,27 @@
+---
+// 주제 페이지 맨 위의 할 일 요약 한 줄. 페이지 끝 TaskList(#checklist)로 이동한다.
+// 사용법: <TopicTasks topic="housing" />  (TaskList와 같은 props, 같은 필터)
+// 완료 수는 같은 페이지의 TaskList가 부르는 checklist.ts가 [data-progress]로 채운다.
+import { getCollection } from 'astro:content';
+import type { PhaseId, TopicId } from '../lib/taxonomy';
+
+interface Props {
+	phase?: PhaseId;
+	topic?: TopicId;
+}
+const { phase, topic } = Astro.props;
+const ids = (
+	await getCollection('tasks', ({ data }) => (!phase || data.phase === phase) && (!topic || data.topic === topic))
+).map((t) => t.id);
+---
+
+{
+	ids.length > 0 && (
+		<a class="topic-tasks not-content" href="#checklist" data-progress={ids.join(',')}>
+			<span>이 주제의 할 일 {ids.length}개</span>
+			<span class="topic-tasks-done">
+				<span data-progress-done>0</span> 완료 →
+			</span>
+		</a>
+	)
+}

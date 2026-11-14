@@ -1,0 +1,14 @@
+---
+// 묶음 행 상자. 사용법: <Rows title="돌려받지 못하는 돈" tone="lost"><Row .../></Rows>
+// tone: back(초록) / lost(빨강) / info(파랑) / 없음(회색)
+interface Props {
+	title?: string;
+	tone?: 'back' | 'lost' | 'info';
+}
+const { title, tone } = Astro.props;
+---
+
+<section class="rows not-content" data-tone={tone}>
+	{title && <p class="rows-title">{title}</p>}
+	<ul class="rows-list"><slot /></ul>
+</section>

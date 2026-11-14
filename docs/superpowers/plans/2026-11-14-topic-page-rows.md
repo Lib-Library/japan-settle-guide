@@ -325,7 +325,7 @@ CONTRIBUTING.md의 MDX 컴포넌트 설명 근처에 짧은 절을 추가:
 ```md
 ### 주제 페이지 구성 요소
 
-- **용어 + 설명 목록** → `<Rows title="묶음 이름" tone="back|lost|info">` 안에 `<Row t="이름" ja="原語" r="독음" value="값">한 줄 설명</Row>`. 긴 설명은 `</Rows>` 아래 문단으로.
+- **용어 + 설명 목록** → `<Rows title="묶음 이름" tone="back|lost|info">` 안에 `<Row ja="原語" r="독음" t="뜻" value="값">한 줄 설명</Row>`. 긴 설명은 `</Rows>` 아래 문단으로.
 - **요약 숫자** → `<Stat value="4~7개월분">보조 설명</Stat>`
 - **번호 절차** → `import { Steps } from '@astrojs/starlight/components'` 후 번호 목록을 `<Steps>`로 감싼다.
 - **강조·경고** → `:::tip[제목]` / `:::caution[제목]` (한 섹션에 하나 이하)
