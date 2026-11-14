@@ -3,7 +3,7 @@
 // 사용법: <TaskList phase="arrival-2w" />  또는  <TaskList topic="registration" />
 // 시기로 모으면 PHASE_STEPS의 단계별로 묶고, 진행 원형 요약을 맨 위에 둔다.
 import { getCollection } from 'astro:content';
-import TaskCard from './TaskCard.astro';
+import TaskRow from './TaskRow.astro';
 import ProgressBar from './ProgressBar.astro';
 import { PHASE_STEPS, stepOf, type PhaseId, type TopicId } from '../lib/taxonomy';
 
@@ -46,7 +46,7 @@ const ids = tasks.map((t) => t.id);
 				<div class="task-summary-text">
 					<p class="task-summary-title">{progressLabel}</p>
 					<p class="task-summary-arrival" data-arrival-days hidden />
-					<p class="task-hint">항목을 누르면 자세한 내용이 열립니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
+					<p class="task-hint">항목을 누르면 할 일 페이지로 이동합니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
 				</div>
 			</div>
 			<ol class="task-steps">
@@ -62,9 +62,11 @@ const ids = tasks.map((t) => t.id);
 								<span class="task-step-now">지금 할 일</span>
 								<span class="task-step-done">완료</span>
 							</h3>
-							{s.tasks.map((task) => (
-								<TaskCard task={task} />
-							))}
+							<ul class="schedule-list">
+								{s.tasks.map((task) => (
+									<TaskRow task={task} />
+								))}
+							</ul>
 						</li>
 					))}
 			</ol>
@@ -72,10 +74,12 @@ const ids = tasks.map((t) => t.id);
 	) : (
 		<div class="task-list not-content">
 			<ProgressBar ids={ids} label={progressLabel} />
-			<p class="task-hint">항목을 누르면 자세한 내용이 열립니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
-			{tasks.map((task) => (
-				<TaskCard task={task} showPhase />
-			))}
+			<p class="task-hint">항목을 누르면 할 일 페이지로 이동합니다. 체크한 내용은 이 브라우저에만 저장됩니다.</p>
+			<ul class="schedule-list">
+				{tasks.map((task) => (
+					<TaskRow task={task} showPhase />
+				))}
+			</ul>
 		</div>
 	)
 }

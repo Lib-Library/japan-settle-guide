@@ -1,0 +1,39 @@
+---
+// 체크리스트 한 줄: 체크 / 주제 아이콘 / 제목(할 일 페이지 링크) / 기한 · 어디서 / 마감 칩.
+// 내 일정(src/scripts/schedule.ts)의 줄과 같은 마크업·클래스를 쓴다. 부모는 <ul class="schedule-list">.
+import type { CollectionEntry } from 'astro:content';
+import TopicIcon from './TopicIcon.astro';
+import VerifyText from './VerifyText.astro';
+import { phaseOf } from '../lib/taxonomy';
+
+interface Props {
+	task: CollectionEntry<'tasks'>;
+	showPhase?: boolean;
+}
+const { task, showPhase = false } = Astro.props;
+const { data } = task;
+const phase = phaseOf(data.phase);
+---
+
+<li class="schedule-item task-row" data-task-card={task.id}>
+	<label class="task-check-wrap">
+		<input class="task-check" type="checkbox" data-task-id={task.id} aria-label={`${data.title} 완료 표시`} />
+	</label>
+	<TopicIcon topic={data.topic} size="sm" />
+	<div class="schedule-item-body">
+		<a class="schedule-title" href={`/tasks/${task.id}/`}>{data.title}</a>
+		{data.optional && <span class="task-tag">선택</span>}
+		<p class="schedule-when">
+			{showPhase && phase && <span class="task-phase">{phase.label} · </span>}
+			<VerifyText text={data.deadline} /> · <VerifyText text={data.where} />
+		</p>
+		<span
+			class="home-chip task-due-chip"
+			data-due-chip={task.id}
+			data-phase={data.phase}
+			data-due={data.due ? JSON.stringify(data.due) : undefined}
+			hidden
+		/>
+	</div>
+	<span class="task-row-arrow" aria-hidden="true">→</span>
+</li>

@@ -1307,15 +1307,37 @@ site-search button {
 	cursor: pointer;
 }
 
-/* 할 일 카드의 마감 칩 (입국일이 있을 때) */
+/* 할 일 줄의 마감 칩 (입국일이 있을 때) */
 .task-due-chip {
-	justify-self: start;
+	display: inline-block;
 	margin-top: 0.35rem;
 	font-size: var(--sl-text-xs);
 }
 .task-due-chip[hidden],
-.task-card.is-done .task-due-chip {
+.is-done .task-due-chip {
 	display: none;
+}
+
+/* 시간순·주제별 체크리스트 줄: 줄 전체가 할 일 페이지 링크, 체크박스만 그 위에 */
+.task-row {
+	position: relative;
+}
+.task-row .schedule-title::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+}
+.task-row .task-check-wrap {
+	position: relative;
+	z-index: 1;
+}
+.task-row:hover .schedule-title {
+	text-decoration: underline;
+}
+.task-row-arrow {
+	flex-shrink: 0;
+	padding-inline-end: 0.25rem;
+	color: var(--sl-color-gray-3);
 }
 
 /* 시기 페이지: 진행 원형 요약 + 단계 묶음 */
