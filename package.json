@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "node scripts/check-content.mjs && node scripts/check-initial-cost.mjs"
+    "check": "node scripts/check-content.mjs && node scripts/check-initial-cost.mjs && node scripts/check-due.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",

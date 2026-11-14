@@ -1,0 +1,9 @@
+---
+// 요약 숫자 상자. 사용법: <Stat value="4~7개월분">집세 기준</Stat>
+interface Props {
+	value: string;
+}
+const { value } = Astro.props;
+---
+
+<p class="stat not-content"><strong class="stat-v">{value}</strong> <span class="stat-d"><slot /></span></p>

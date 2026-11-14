@@ -6,6 +6,7 @@ order: 5
 optional: true
 where: 병무청 (병무민원포털 온라인, 관할 지방병무청, 상담 1588-9090) / 출국 후에는 주일 한국대사관·총영사관
 deadline: 출국 전 — 허가 없이 출국하면 병역법 위반
+due: { kind: estimate, days: 0 }
 bring:
   - 허가 종류마다 서류가 다름 — 병무청(1588-9090)에 본인 신분을 말하고 확인
 sources:

@@ -6,6 +6,7 @@ topic: registration
 order: 10
 where: 살게 된 주소의 시·구·정·촌 사무소(市区町村役所, 시쿠초손 야쿠쇼) 주민 담당 창구
 deadline: 살 곳을 정한 날부터 14일 이내
+due: { kind: estimate, days: 14 }
 bring:
   - 재류카드(在留カード, 자이류 카도) — 공항에서 받지 못한 경우 "나중에 재류카드를 발급한다"는 기재가 있는 여권
   - 여권

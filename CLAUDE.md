@@ -8,19 +8,23 @@
 
 - `npm run dev` — 미리보기 (AGENTS.md 지침대로 백그라운드: `astro dev --background`)
 - `npm run build` — 정적 빌드(`dist/`). tasks 프론트매터 스키마 위반(출처 0개, 잘못된 phase/topic 등)은 여기서 실패
-- `npm run check` — `scripts/check-content.mjs`: `[확인 필요]` 위치, 183일 넘은 `lastVerified`, 출처 없는 topics 페이지 리포트
+- `npm run check` — `scripts/check-content.mjs`: `[확인 필요]` 위치, 183일 넘은 `lastVerified`, 출처 없는 topics 페이지, 깨지는 굵게(`**「용어」**를`) 리포트
 - 테스트 러너·린터 없음. 검증은 `build` + `check`.
 
 ## 구조
 
-- `src/content/tasks/*.md` — 체크리스트 항목(40개). 스키마는 `src/content.config.ts`
+- `src/content/tasks/*.md` — 체크리스트 항목(37개). 스키마는 `src/content.config.ts`
 - `src/content/docs/` — 홈, `timeline/`(시기 5개), `topics/`(주제 9개), `glossary.mdx`, `about.md`. 모든 페이지에 `lastVerified` 필수
 - `src/lib/taxonomy.ts` — PHASES/TOPICS 단일 출처. 새 시기·주제는 여기에 추가 (`work`, `family` 주제는 정의만 있고 항목 없음)
-- `src/components/` — TaskCard/TaskList/PhasePicker/ProgressBar/Sources/Ja/ExpertNote/VerifyText, `overrides/`는 Starlight 컴포넌트 교체
+- `src/components/` — TaskRow(체크리스트 한 줄, 내 일정과 같은 마크업. 주제 페이지는 `readonly` 링크 목록)/TaskList/Rows·Row·Stat·TopicTasks(주제 페이지 구성 요소, CONTRIBUTING.md 참고)/ProgressBar/Sources/Ja/ExpertNote/VerifyText, `overrides/`는 Starlight 컴포넌트 교체
 - `src/plugins/remark-verify.mjs` — 본문 `[확인 필요]` → 노란 배지 (`astro.config.mjs`에서 unified 처리기로 등록)
 - `src/scripts/checklist.ts` — 진행 상황을 localStorage(`jsg:progress:v1`)에 저장. 서버·계정 없음
 - 사이드바는 `astro.config.mjs`에 수동 정의(topics만 autogenerate)
 - 디자인: KRDS(`krds-uiux`) 토큰(`krds_tokens.css`)을 `customCss`로 불러오고 `src/styles/custom.css`에서 Starlight 변수에 연결. KRDS 토큰은 라이트 전용이라 다크는 같은 팔레트의 어두운 단계로 직접 지정
+- `src/pages/tasks/[id].astro` — 할 일 개별 페이지 (URL = tasks 파일명). `src/content/docs/my.mdx` — 내 일정
+- `src/lib/due.ts`·`src/lib/ics.ts` — 입국일 마감일 계산·캘린더 파일 (검사: `scripts/check-due.mjs`). tasks의 `due` 필드는 `deadline` 문장의 숫자만 쓴다
+- `src/scripts/arrival.ts` — 입국일을 localStorage(`jsg:arrival:v1`)에 저장
+- 방문 통계·카드뉴스 링크 규칙: `docs/analytics.md` (토큰은 환경 변수 `PUBLIC_CF_BEACON_TOKEN`)
 
 ## 반드시 지킬 규칙
 
@@ -36,3 +40,4 @@
 ## 알려진 주의점
 
 - 외부 CDN(Pretendard, Google Fonts)에 의존한다 (`astro.config.mjs` head).
+- 공유 이미지 `public/og.png`는 `node scripts/make-og.mjs`로 다시 만든다.

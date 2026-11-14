@@ -6,6 +6,7 @@ topic: insurance-tax
 order: 10
 where: 회사 인사·총무 담당 (종이 또는 회사가 정한 시스템)
 deadline: 연말, 회사가 정한 기한까지
+due: { kind: none }
 bring:
   - 생명보험·지진보험 등의 보험료 공제 증명서 (가입한 경우)
   - 부양가족 관련 서류 (해당하는 경우)

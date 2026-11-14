@@ -1,17 +1,18 @@
 // 초기비용 결과를 공유용 PNG로 그린다. 다크 모드와 상관없이 항상 밝은 카드로 만든다.
 export interface ShareCard {
 	total: string;
-	sub: string;
+	sub: string[];
 	keep: string;
 	gone: string;
 	keepRatio: number;
 	items: { label: string; amount: string }[];
-	footer: string;
+	footer: string[];
 }
 
-const WIDTH = 540;
-const PAD = 32;
-const SCALE = 2;
+// 폰 화면 폭에서도 글자가 작아지지 않도록 좁게 그리고 해상도를 올린다.
+const WIDTH = 400;
+const PAD = 24;
+const SCALE = 3;
 const FONT = `'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif`;
 
 export async function drawShareCard(card: ShareCard): Promise<Blob> {
@@ -24,14 +25,14 @@ export async function drawShareCard(card: ShareCard): Promise<Blob> {
 	const goneColor = token('danger-60');
 
 	// 글꼴은 글자 범위별로 내려받으므로 그릴 글자를 알려 준다. CDN이 느려도 시스템 글꼴로 넘어간다.
-	const text = [card.total, card.sub, card.keep, card.gone, card.footer, ...card.items.flatMap((i) => [i.label, i.amount]), '일본 집 초기비용 예상나중에 돌려받을 수 있음돌려받지 못함'].join('');
+	const text = [card.total, ...card.sub, card.keep, card.gone, ...card.footer, ...card.items.flatMap((i) => [i.label, i.amount]), '일본 집 초기비용 예상나중에 돌려받을 수 있음돌려받지 못함'].join('');
 	await Promise.race([
 		Promise.all([document.fonts.load(`400 16px ${FONT}`, text), document.fonts.load(`700 16px ${FONT}`, text)]).catch(() => {}),
 		new Promise((done) => setTimeout(done, 1500)),
 	]);
 
 	const rowH = 34;
-	const height = PAD + 30 + 62 + 30 + 28 + 52 + card.items.length * rowH + 46 + PAD;
+	const height = PAD + 30 + 62 + card.sub.length * 24 + 28 + 52 + card.items.length * rowH + 22 * card.footer.length + 18 + PAD;
 	const canvas = document.createElement('canvas');
 	canvas.width = WIDTH * SCALE;
 	canvas.height = height * SCALE;
@@ -53,8 +54,11 @@ export async function drawShareCard(card: ShareCard): Promise<Blob> {
 	put('일본 집 초기비용 예상', PAD, y, 18, ink, 700);
 	y += 62;
 	put(card.total, PAD, y, 46, ink, 700);
-	y += 30;
-	put(card.sub, PAD, y, 15, muted);
+	y += 6;
+	for (const line of card.sub) {
+		y += 24;
+		put(line, PAD, y, 15, muted);
+	}
 	y += 22;
 
 	const keepW = inner * card.keepRatio;
@@ -81,7 +85,11 @@ export async function drawShareCard(card: ShareCard): Promise<Blob> {
 	}
 	g.fillStyle = ink;
 	g.fillRect(PAD, y, inner, 2);
-	put(card.footer, PAD, y + 30, 13, muted);
+	y += 8;
+	for (const line of card.footer) {
+		y += 22;
+		put(line, PAD, y, 13, muted);
+	}
 
 	return new Promise((resolve, reject) => {
 		canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('PNG 생성 실패'))), 'image/png');

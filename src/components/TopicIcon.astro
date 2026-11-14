@@ -1,0 +1,27 @@
+---
+// 주제별 아이콘: 토스페이스 이모지 + 중립 바탕. 글꼴은 custom.css의 @font-face(토스페이스 09번 조각)에서 불러온다.
+// 새 이모지는 09번 조각(U+1F4B0~1F4FF, U+1F9E2~1F9FF 등) 안에서 고른다. 다른 조각을 쓰면 글꼴 파일을 하나 더 받게 된다.
+import type { TopicId } from '../lib/taxonomy';
+
+interface Props {
+	topic: TopicId;
+	size?: 'sm' | 'md';
+}
+const { topic, size = 'md' } = Astro.props;
+
+const ICONS: Record<TopicId, string> = {
+	'pre-arrival': '🧳',
+	registration: '📋',
+	housing: '🔑',
+	finance: '💳',
+	living: '📱',
+	'insurance-tax': '🧾',
+	work: '📁',
+	'health-safety': '🩺',
+	korea: '📨',
+	transport: '🎫',
+	family: '🧸',
+};
+---
+
+<span class={`topic-icon topic-icon-${size}`} aria-hidden="true">{ICONS[topic]}</span>

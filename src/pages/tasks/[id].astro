@@ -1,0 +1,129 @@
+---
+// 할 일 하나의 개별 페이지 (검색으로 들어오는 곳). URL은 tasks 파일명 그대로.
+// 순서: 주제·원어 → 내 마감일 → 어디서/언제까지 → 준비물 체크 → 본문 → 출처
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import MyDue from '../../components/MyDue.astro';
+import TopicIcon from '../../components/TopicIcon.astro';
+import Sources from '../../components/Sources.astro';
+import VerifyText from '../../components/VerifyText.astro';
+import ProgressBar from '../../components/ProgressBar.astro';
+import { phaseOf, stepOf, topicOf } from '../../lib/taxonomy';
+
+type Task = CollectionEntry<'tasks'>;
+
+export async function getStaticPaths() {
+	const tasks = (await getCollection('tasks')).sort(
+		(a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'ko'),
+	);
+	return tasks.map((task) => {
+		const siblings = tasks.filter((t) => t.data.phase === task.data.phase);
+		const i = siblings.indexOf(task);
+		return { params: { id: task.id }, props: { task, prev: siblings[i - 1], next: siblings[i + 1] } };
+	});
+}
+
+interface Props {
+	task: Task;
+	prev?: Task;
+	next?: Task;
+}
+const { task, prev, next } = Astro.props;
+const { data } = task;
+const { Content } = await render(task);
+const phase = phaseOf(data.phase)!;
+const step = stepOf(data.phase, data.order);
+const term = data.term ? ` ${data.term.ja}(${data.term.reading})` : '';
+const pager = (t?: Task) => (t ? { link: `/tasks/${t.id}/`, label: t.data.title } : false);
+// 준비물 체크는 진행 상황 저장소(jsg:progress:v1)를 같이 쓴다. 파일명에는 ':'가 없어 할 일 키와 겹치지 않는다.
+// ponytail: 키가 목록 순서라 bring 순서를 바꾸면 체크가 다른 항목으로 옮겨 간다. 문제가 되면 항목 문장으로 키를 만든다.
+const bringIds = data.bring.map((_, i) => `${task.id}:bring-${i}`);
+---
+
+<StarlightPage
+	frontmatter={{
+		title: data.title,
+		description: `${data.title}${term} — 어디서 하는지, 언제까지인지, 준비물과 놓치기 쉬운 점을 공식 출처와 함께 정리했습니다.`,
+		lastVerified: data.lastVerified,
+		needsExpert: data.needsExpert,
+		prev: pager(prev),
+		next: pager(next),
+	}}
+>
+	<div class="task-page not-content">
+		<p class="task-page-crumb"><a href={phase.href}>{phase.label}</a> · {step.label}</p>
+		<div class="task-page-head">
+			<TopicIcon topic={data.topic} />
+			<div>
+				<p class="task-page-topic">{topicOf(data.topic)?.label}{data.optional && <span class="task-tag">선택</span>}</p>
+				{
+					data.term && (
+						<p class="task-page-term">
+							<span lang="ja">{data.term.ja}</span> {data.term.reading}
+						</p>
+					)
+				}
+			</div>
+		</div>
+
+		<MyDue task={task} />
+
+		<div class="task-page-facts">
+			<div class="task-page-fact">
+				<p class="task-page-fact-label">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+						<path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="9" r="2.5"></circle>
+					</svg>어디서
+				</p>
+				<p class="task-page-fact-text"><VerifyText text={data.where} /></p>
+			</div>
+			<div class="task-page-fact">
+				<p class="task-page-fact-label">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+						<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>
+					</svg>언제까지
+				</p>
+				<p class="task-page-fact-text"><VerifyText text={data.deadline} /></p>
+			</div>
+		</div>
+
+		{
+			data.bring.length > 0 && (
+				<section class="task-page-card" aria-labelledby="bring-title">
+					<div class="task-page-card-head">
+						<h2 id="bring-title">준비물</h2>
+						<ProgressBar ids={bringIds} label="챙김" />
+					</div>
+					<ul class="task-bring">
+						{data.bring.map((b, i) => (
+							<li>
+								<label>
+									<input class="task-check" type="checkbox" data-task-id={bringIds[i]} />
+									<span>
+										<VerifyText text={b} />
+									</span>
+								</label>
+							</li>
+						))}
+					</ul>
+				</section>
+			)
+		}
+
+		<section class="task-page-card task-body sl-markdown-content">
+			<Content />
+		</section>
+
+		<Sources sources={data.sources} heading={`공식 출처 ${data.sources.length}개`} />
+
+		<p class="task-page-links">
+			<a href={phase.href}>{phase.label} 할 일 전체 보기</a>
+			<a href="/my/">내 일정 보기</a>
+		</p>
+	</div>
+</StarlightPage>
+
+<script>
+	import { initChecklist } from '../../scripts/checklist';
+	initChecklist();
+</script>

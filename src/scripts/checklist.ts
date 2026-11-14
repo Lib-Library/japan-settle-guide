@@ -2,13 +2,21 @@
 // 저장 형식: { "<task id>": true, ... }  — 키는 tasks 폴더의 파일 이름.
 
 const STORAGE_KEY = 'jsg:progress:v1';
+/** 진행 상황이 바뀌면 document에 보내는 이벤트 (내 일정 등이 다시 그린다) */
+export const PROGRESS_EVENT = 'jsg:progress';
 
 type Progress = Record<string, boolean>;
 
-function load(): Progress {
+/** 저장된 문자열을 읽는다. 깨진 값('null', 배열 등)은 빈 진행 상황으로 본다. */
+export function parseProgress(raw: string | null): Progress {
+	if (!raw) return {};
+	const value: unknown = JSON.parse(raw);
+	return value && typeof value === 'object' && !Array.isArray(value) ? (value as Progress) : {};
+}
+
+export function loadProgress(): Progress {
 	try {
-		const raw = localStorage.getItem(STORAGE_KEY);
-		return raw ? (JSON.parse(raw) as Progress) : {};
+		return parseProgress(localStorage.getItem(STORAGE_KEY));
 	} catch {
 		// 시크릿 모드 등에서 저장소를 쓸 수 없어도 페이지는 정상 동작해야 한다.
 		return {};
@@ -25,11 +33,17 @@ function save(progress: Progress) {
 
 let progress: Progress = {};
 
+/** 지금 화면의 진행 상황 (저장소를 못 써도 이번 방문 동안의 체크가 들어 있다) */
+export const getProgress = (): Progress => progress;
+
 function render() {
 	document.querySelectorAll<HTMLInputElement>('input[data-task-id]').forEach((input) => {
 		const done = Boolean(progress[input.dataset.taskId!]);
 		input.checked = done;
-		input.closest('[data-task-card]')?.classList.toggle('is-done', done);
+	});
+	// 체크박스가 없는 읽기 전용 줄(주제 페이지)도 같은 저장소로 완료 표시를 한다.
+	document.querySelectorAll<HTMLElement>('[data-task-card]').forEach((el) => {
+		el.classList.toggle('is-done', Boolean(progress[el.dataset.taskCard!]));
 	});
 
 	document.querySelectorAll<HTMLElement>('[data-progress]').forEach((el) => {
@@ -40,8 +54,11 @@ function render() {
 		if (doneEl) doneEl.textContent = String(done);
 		el.querySelector('[role="progressbar"]')?.setAttribute('aria-valuenow', String(done));
 		el.querySelector<HTMLElement>('.progress-fill')?.style.setProperty('width', `${pct}%`);
+		el.style.setProperty('--pct', `${pct}%`); // 원형 진행 표시(.task-ring)용
 		el.classList.toggle('is-complete', ids.length > 0 && done === ids.length);
 	});
+
+	document.dispatchEvent(new CustomEvent(PROGRESS_EVENT));
 }
 
 let initialized = false;
@@ -49,7 +66,7 @@ let initialized = false;
 export function initChecklist() {
 	if (initialized) return;
 	initialized = true;
-	progress = load();
+	progress = loadProgress();
 	render();
 
 	document.addEventListener('change', (e) => {
@@ -74,7 +91,7 @@ export function initChecklist() {
 	// 다른 탭에서 체크한 내용도 반영
 	window.addEventListener('storage', (e) => {
 		if (e.key !== STORAGE_KEY) return;
-		progress = load();
+		progress = loadProgress();
 		render();
 	});
 }

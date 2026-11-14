@@ -5,6 +5,7 @@ topic: finance
 order: 40
 where: 거래 은행 (창구, 앱, 인터넷 뱅킹 — 은행마다 다름)
 deadline: 이사하거나 재류기간을 갱신했을 때마다 바로
+due: { kind: none }
 bring:
   - 새 재류카드 (재류기간 갱신 후)
   - 통장·캐시카드

@@ -7,6 +7,7 @@ order: 50
 optional: true
 where: 사는 도도부현의 운전면허 시험장 (도쿄는 예약제 — 다른 지역도 미리 확인)
 deadline: 국제운전면허로 운전할 수 있는 기간(일본 상륙일부터 1년) 안에
+due: { kind: estimate, months: 12, days: -1 }
 bring:
   - 한국 운전면허증 (원본)
   - 한국 면허의 일본어 번역문 (JAF 등에서 발행)

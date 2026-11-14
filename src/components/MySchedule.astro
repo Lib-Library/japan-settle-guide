@@ -1,0 +1,114 @@
+---
+// 내 일정: 입국일 입력칸 + 2주 날짜 띠 + 고른 날의 할 일 + 지난 기한/다가오는 일/날짜 없는 일/완료.
+// 목록은 브라우저에서 그린다 (src/scripts/schedule.ts).
+import { getCollection } from 'astro:content';
+import ArrivalInput from './ArrivalInput.astro';
+import TopicIcon from './TopicIcon.astro';
+import { TOPICS } from '../lib/taxonomy';
+
+const tasks = (await getCollection('tasks')).map((t) => ({
+	id: t.id,
+	title: t.data.title,
+	phase: t.data.phase,
+	topic: t.data.topic,
+	deadline: t.data.deadline,
+	optional: t.data.optional,
+	due: t.data.due,
+}));
+const json = JSON.stringify(tasks).replace(/</g, '\\u003c');
+
+const GROUPS = [
+	['overdue', '지난 기한'],
+	['upcoming', '다가오는 일'],
+	['undated', '날짜 없는 일'],
+	['done', '완료한 일'],
+] as const;
+---
+
+<div class="schedule not-content">
+	<ArrivalInput id="arrival-my" showCta={false} />
+
+	<div class="schedule-body" data-schedule hidden>
+		<section class="home-card" aria-labelledby="strip-title">
+			<div class="strip-head">
+				<h2 id="strip-title" class="strip-title">앞으로 2주</h2>
+				<span class="strip-legend"><span class="strip-dot" aria-hidden="true"></span> 마감이 있는 날</span>
+			</div>
+			<div class="strip" data-strip role="group" aria-labelledby="strip-title"></div>
+		</section>
+
+		<p class="schedule-status" data-status role="status"></p>
+
+		<section class="home-card" aria-labelledby="day-title">
+			<h2 id="day-title" class="day-title" data-day-title tabindex="-1"></h2>
+			<p class="day-note" data-day-note></p>
+			<ul class="schedule-list" data-day-list></ul>
+		</section>
+
+		{
+			GROUPS.map(([key, label], i) => (
+				<details class="home-card schedule-group" data-group={key} open={i < 2}>
+					<summary>
+						{label} <span class="schedule-count" data-group-count>0</span>
+					</summary>
+					<ul class="schedule-list" data-group-list />
+				</details>
+			))
+		}
+
+		<button type="button" class="arrival-submit schedule-ics" data-ics-all>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+				<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path>
+			</svg>
+			휴대폰 캘린더에 전부 넣기
+		</button>
+		<p class="task-hint">
+			날짜가 있고 아직 안 한 일만 넣습니다. [예상]은 입국일로 어림한 날짜, [권장]은 이 사이트가 권하는 시기(법정 기한
+			아님)입니다.
+		</p>
+	</div>
+
+	<div class="schedule-sample" data-schedule-empty>
+		<p class="schedule-sample-title">입국일을 넣으면 이렇게 보여요</p>
+		<ul class="schedule-list" aria-hidden="true">
+			<li class="schedule-item">
+				<span class="task-check-wrap"></span>
+				<TopicIcon topic="registration" size="sm" />
+				<div class="schedule-item-body">
+					<span class="schedule-title">전입신고 하기 (주소 등록)</span>
+					<p class="schedule-when">12월 15일까지 · 6일 남음</p>
+				</div>
+				<span class="home-chip is-window">예상</span>
+			</li>
+			<li class="schedule-item">
+				<span class="task-check-wrap"></span>
+				<TopicIcon topic="living" size="sm" />
+				<div class="schedule-item-body">
+					<span class="schedule-title">우리 동네 쓰레기 배출 규칙 확인하기</span>
+					<p class="schedule-when">12월 15일까지 · 6일 남음</p>
+				</div>
+				<span class="home-chip is-window">권장</span>
+			</li>
+		</ul>
+	</div>
+
+	<!-- schedule.ts가 줄마다 복사해 쓰는 주제 아이콘 -->
+	<div hidden>
+		{
+			TOPICS.map((t) => (
+				<span data-topic-icon={t.id}>
+					<TopicIcon topic={t.id} size="sm" />
+				</span>
+			))
+		}
+	</div>
+</div>
+
+<script type="application/json" id="jsg-task-data" set:html={json} />
+
+<script>
+	import { initChecklist } from '../scripts/checklist';
+	import { initSchedule } from '../scripts/schedule';
+	initChecklist();
+	initSchedule();
+</script>

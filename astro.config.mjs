@@ -4,9 +4,13 @@ import starlight from '@astrojs/starlight';
 import { unified } from '@astrojs/markdown-remark';
 import remarkVerify from './src/plugins/remark-verify.mjs';
 
+const SITE = 'https://japan-settle-guide.lib-library.workers.dev';
+// Cloudflare Web Analytics 토큰. 빌드 환경 변수로 넣는다 (docs/analytics.md). 없으면 통계 스크립트를 넣지 않는다.
+const CF_BEACON_TOKEN = process.env.PUBLIC_CF_BEACON_TOKEN;
+
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://japan-settle-guide.lib-library.workers.dev',
+	site: SITE,
 	markdown: {
 		// 본문의 [확인 필요]를 배지로 바꾸는 remark 플러그인을 쓰기 위해 unified 처리기를 사용한다.
 		processor: unified({ remarkPlugins: [remarkVerify] }),
@@ -39,6 +43,19 @@ export default defineConfig({
 						href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap',
 					},
 				},
+				{ tag: 'meta', attrs: { property: 'og:image', content: `${SITE}/og.png` } },
+				...(CF_BEACON_TOKEN
+					? [
+							{
+								tag: 'script',
+								attrs: {
+									defer: true,
+									src: 'https://static.cloudflareinsights.com/beacon.min.js',
+									'data-cf-beacon': JSON.stringify({ token: CF_BEACON_TOKEN }),
+								},
+							},
+						]
+					: []),
 			],
 			customCss: ['krds-uiux/resources/css/token/krds_tokens.css', './src/styles/custom.css'],
 			components: {
@@ -47,6 +64,7 @@ export default defineConfig({
 			},
 			sidebar: [
 				{ label: '홈', link: '/' },
+				{ label: '내 일정', link: '/my/' },
 				{
 					label: '시간순 체크리스트',
 					items: [

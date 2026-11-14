@@ -1,0 +1,24 @@
+---
+// 묶음 행 한 줄: 이름 / 한 줄 설명(자식) / 오른쪽 값 또는 태그
+// 이름: 원어가 있으면 「原語(독음) 뜻」, 없으면 「뜻」. 원어가 있을 때 뜻(t)은 생략할 수 있다.
+// 사용법: <Row ja="礼金" r="레이킨" t="사례금" value="1~2개월분">집주인에게 주는 돈</Row>
+import Ja from './Ja.astro';
+
+interface Props {
+	t?: string;
+	ja?: string;
+	r?: string;
+	value?: string;
+	tag?: string;
+}
+const { t, ja, r, value, tag } = Astro.props;
+---
+
+<li class="row">
+	<div class="row-main">
+		<span class="row-t">{ja && r && <Ja t={ja} r={r} />}{ja && r && t && ' '}{t}</span>
+		{Astro.slots.has('default') && <div class="row-d"><slot /></div>}
+	</div>
+	{value && <span class="row-v">{value}</span>}
+	{!value && tag && <span class="row-tag">{tag}</span>}
+</li>

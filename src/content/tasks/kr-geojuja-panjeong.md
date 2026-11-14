@@ -5,6 +5,7 @@ topic: korea
 order: 35
 where: 한국 국세청 또는 세무사
 deadline: 출국 전 (한국에 집·임대 소득·금융 소득이 있다면 특히)
+due: { kind: estimate, days: 0 }
 bring: []
 sources:
   - label: 국세청 – 비거주자 판정과 과세방법 (Q&A PDF)
